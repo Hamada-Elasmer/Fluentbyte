@@ -1,8 +1,0 @@
-2026-02-21 19:33:53.994 +02:00 [SYSTEM] [C:Adb] [Ch:SYSTEM] [Src:Adb] [Run:bd8b7d5e85e14048bba1a0d7470b3094] [Sess:1] [Profile:b580c54716134f7c8ce5f27a2cc0edf4] - [ADB] Waiting for device ready: emulator-5554
-2026-02-21 19:34:32.037 +02:00 [SYSTEM] [C:Adb] [Ch:SYSTEM] [Src:Adb] [Run:bd8b7d5e85e14048bba1a0d7470b3094] [Sess:1] [Profile:b580c54716134f7c8ce5f27a2cc0edf4] - [ADB] Device ready ✅
-2026-02-21 19:34:36.812 +02:00 [SYSTEM] [C:Adb] [Ch:SYSTEM] [Src:Adb] [Run:2ace846c11c94b309d84c06dbf9d6bb1] [Sess:1] [Profile:b580c54716134f7c8ce5f27a2cc0edf4] - [ADB] Waiting for device ready: emulator-5554
-2026-02-21 19:34:54.744 +02:00 [SYSTEM] [C:Adb] [Ch:SYSTEM] [Src:Adb] [Run:2ace846c11c94b309d84c06dbf9d6bb1] [Sess:1] [Profile:b580c54716134f7c8ce5f27a2cc0edf4] - [ADB] Device ready ✅
-2026-02-21 19:35:01.265 +02:00 [SYSTEM] [C:Adb] [Ch:SYSTEM] [Src:Adb] [Run:b073f6d9605c465bae5622931207594a] [Sess:1] [Profile:b580c54716134f7c8ce5f27a2cc0edf4] - [ADB] Waiting for device ready: emulator-5554
-2026-02-21 19:35:01.458 +02:00 [SYSTEM] [C:Adb] [Ch:SYSTEM] [Src:Adb] [Run:b073f6d9605c465bae5622931207594a] [Sess:1] [Profile:b580c54716134f7c8ce5f27a2cc0edf4] - [ADB] Device ready ✅
-2026-02-21 19:35:07.896 +02:00 [SYSTEM] [C:Adb] [Ch:SYSTEM] [Src:Adb] [Run:3bf7e58d2dc147bc854bced53d631846] [Sess:1] [Profile:b580c54716134f7c8ce5f27a2cc0edf4] - [ADB] Waiting for device ready: emulator-5554
-2026-02-21 19:35:08.087 +02:00 [SYSTEM] [C:Adb] [Ch:SYSTEM] [Src:Adb] [Run:3bf7e58d2dc147bc854bced53d631846] [Sess:1] [Profile:b580c54716134f7c8ce5f27a2cc0edf4] - [ADB] Device ready ✅

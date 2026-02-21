@@ -1,2 +1,0 @@
-2026-02-21 19:28:50.067 +02:00 [SYSTEM] [C:Api] [Ch:SYSTEM] [Src:Api] [Run:] [Sess:0] [Profile:] - Webserver State changed new state: Loading - old state: Created
-2026-02-21 19:28:50.312 +02:00 [SYSTEM] [C:Api] [Ch:SYSTEM] [Src:Api] [Run:] [Sess:0] [Profile:] - Webserver State changed new state: Listening - old state: Loading
