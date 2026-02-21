@@ -1,0 +1,48 @@
+﻿<UserControl
+    x:Class="SparkFlow.UI.Views.Dialogs.Contents.SukiMessageDialogContent"
+    x:DataType="vm:SukiMessageDialogContentViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:vm="clr-namespace:SparkFlow.UI.ViewModels.Dialogs.Contents"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid
+        Margin="18"
+        RowDefinitions="Auto,Auto,Auto"
+        RowSpacing="12">
+
+        <TextBlock
+            FontSize="18"
+            FontWeight="Bold"
+            Text="{Binding Title}"
+            TextWrapping="Wrap" />
+
+        <TextBlock
+            Grid.Row="1"
+            Opacity="0.9"
+            Text="{Binding Body}"
+            TextWrapping="Wrap" />
+
+        <StackPanel
+            Grid.Row="2"
+            HorizontalAlignment="Center"
+            Margin="0,10,0,0"
+            Orientation="Horizontal"
+            Spacing="10">
+
+            <Button
+                Command="{Binding PrimaryCommand}"
+                Content="{Binding PrimaryText}"
+                Height="38"
+                MinWidth="140" />
+
+            <Button
+                Command="{Binding SecondaryCommand}"
+                Content="{Binding SecondaryText}"
+                Height="38"
+                IsVisible="{Binding HasSecondary}"
+                MinWidth="140" />
+
+        </StackPanel>
+
+    </Grid>
+</UserControl>

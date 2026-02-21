@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Libraries\SettingsStore\SettingsStore.csproj" />
+      <ProjectReference Include="..\..\Libraries\UtiliLib\UtiliLib.csproj" />
+      <ProjectReference Include="..\SparkFlow.Abstractions\SparkFlow.Abstractions.csproj" />
+      <ProjectReference Include="..\SparkFlow.Engine\SparkFlow.Engine.csproj" />
+      <ProjectReference Include="..\SparkFlow.Infrastructure\SparkFlow.Infrastructure.csproj" />
+    </ItemGroup>
+
+
+</Project>

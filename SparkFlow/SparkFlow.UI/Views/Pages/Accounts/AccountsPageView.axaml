@@ -1,0 +1,282 @@
+<!--
+    ==========================================================================
+    SparkFlow File Header
+    File: SparkFlow/SparkFlow.UI/Views/Pages/Accounts/AccountsPageView.axaml
+    Purpose:
+      - Header ثابت
+      - Warning ثابت
+      - ListBox فقط هو اللي يعمل Scroll
+      - Footer ثابت تحت خارج السكرول
+    Notes:
+      - لا نستخدم ScrollViewer خارجي نهائيًا.
+      - الـ ListBox داخليًا يحتوي ScrollViewer (Avalonia default)
+        وده يخليه يسكرول لوحده تلقائيًا.
+    ==========================================================================
+-->
+<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="900"
+    mc:Ignorable="d"
+    x:Class="SparkFlow.UI.Views.Pages.Accounts.AccountsPageView"
+    x:DataType="accounts1:AccountsPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:accounts1="clr-namespace:SparkFlow.UI.ViewModels.Pages.Accounts"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:material="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:suki="https://github.com/kikipoulet/SukiUI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Grid Layout:
+        Row 0 (Auto): Header
+        Row 1 (Auto): Warning
+        Row 2 (*)   : ListBox (scrollable area)
+        Row 3 (Auto): Footer (fixed)
+    -->
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="20">
+
+        <!-- =========================================================
+             ROW 0: Header (Fixed)
+             ========================================================= -->
+        <StackPanel Grid.Row="0" Spacing="6">
+            <TextBlock FontSize="22" FontWeight="Bold" Text="Accounts" />
+            <TextBlock FontSize="14" Opacity="0.75" Text="Profiles are created by SparkFlow ." />
+            <Separator />
+        </StackPanel>
+
+        <!-- =========================================================
+             ROW 1: Warning (Fixed)
+             Visible only when needed
+             ========================================================= -->
+        <Border
+            Grid.Row="1"
+            Margin="0,12,0,0"
+            Background="#33FFB020"
+            BorderBrush="#66FFB020"
+            BorderThickness="1"
+            CornerRadius="10"
+            IsVisible="{Binding ShowNoFreeInstancesWarning}"
+            Padding="12">
+            <TextBlock FontSize="14" Text="{Binding WarningText}" />
+        </Border>
+
+        <!-- =========================================================
+             ROW 2: Profiles List (Scrollable)
+             IMPORTANT:
+             - ListBox is inside Row="*" so it takes the remaining height.
+             - ListBox will scroll automatically (built-in ScrollViewer).
+             ========================================================= -->
+        <ListBox
+            Grid.Row="2"
+            Margin="0,12,0,0"
+            ItemsSource="{Binding Profiles}"
+            SelectedItem="{Binding SelectedProfile}"
+            SelectionMode="Single"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+            <!-- =========================
+                 ListBox Styles
+                 ========================= -->
+            <ListBox.Styles>
+
+                <!-- Remove default padding/margins -->
+                <Style Selector="ListBoxItem">
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+
+                <!-- Keep selection presenter transparent -->
+                <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+
+                <!-- Selected card effect -->
+                <Style Selector="ListBoxItem:selected suki|GlassCard.account-card">
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+
+                <!-- Hover card effect -->
+                <Style Selector="suki|GlassCard.account-card:pointerover">
+                    <Setter Property="Opacity" Value="0.92" />
+                </Style>
+
+            </ListBox.Styles>
+
+            <!-- =========================
+                 Profile Item Template
+                 ========================= -->
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="accounts1:ProfileItemViewModel">
+
+                    <!-- Account Card -->
+                    <suki:GlassCard
+                        Classes="account-card"
+                        CornerRadius="4"
+                        IsInteractive="True"
+                        Margin="0,6,0,6"
+                        Padding="15">
+
+                        <!-- Layout: [Info] [LastActive] [Toggle] [Icons] -->
+                        <Grid ColumnDefinitions="*,Auto,Auto,Auto" VerticalAlignment="Center">
+
+                            <!-- Left: Name + Instance -->
+                            <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    HorizontalAlignment="Left"
+                                    Text="{Binding Name}"
+                                    TextTrimming="CharacterEllipsis"
+                                    Width="300" />
+
+                                <TextBlock
+                                    FontSize="12"
+                                    Opacity="0.85"
+                                    Padding="10,0,0,0"
+                                    Text="{Binding InstanceName, StringFormat={}{0}}" />
+                            </StackPanel>
+
+                            <!-- Middle: Last Active -->
+                            <TextBlock
+                                Grid.Column="1"
+                                FontSize="12"
+                                HorizontalAlignment="Left"
+                                Margin="18,0"
+                                Opacity="0.85"
+                                Text="{Binding LastActiveText}"
+                                VerticalAlignment="Center" />
+
+                            <!-- Toggle: Active -->
+                            <ToggleSwitch
+                                Grid.Column="2"
+                                IsChecked="{Binding Active, Mode=TwoWay}"
+                                Margin="18,0"
+                                VerticalAlignment="Center"
+                                Width="70" />
+
+                            <!-- Right: Icon Bar -->
+                            <StackPanel
+                                Grid.Column="3"
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal"
+                                Spacing="8"
+                                VerticalAlignment="Center">
+
+                                <!-- Health Check -->
+                                <Button
+                                    Command="{Binding OpenHealthCheckCommand}"
+                                    Height="40"
+                                    Width="40"
+                                    Padding="0"
+                                    ToolTip.Tip="Health Check">
+                                    <material:MaterialIcon
+                                        Kind="Monitor"
+                                        Height="16"
+                                        Width="16"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Button>
+
+                                <!-- Game Status -->
+                                <Button
+                                    Command="{Binding InstallGameCommand}"
+                                    Height="40"
+                                    Width="40"
+                                    Padding="0"
+                                    ToolTip.Tip="Game status">
+                                    <material:MaterialIcon
+                                        Kind="InformationOutline"
+                                        Height="16"
+                                        Width="16"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Button>
+
+                                <!-- Settings -->
+                                <Button
+                                    Command="{Binding OpenTasksCommand}"
+                                    Height="40"
+                                    Width="40"
+                                    Padding="0"
+                                    ToolTip.Tip="Settings">
+                                    <material:MaterialIcon
+                                        Kind="Cog"
+                                        Height="16"
+                                        Width="16"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Button>
+
+                                <!-- Dashboard -->
+                                <Button
+                                    Command="{Binding OpenDashboardCommand}"
+                                    Height="40"
+                                    Width="40"
+                                    Padding="0"
+                                    ToolTip.Tip="Dashboard">
+                                    <material:MaterialIcon
+                                        Kind="ChartPie"
+                                        Height="16"
+                                        Width="16"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Button>
+
+                                <!-- Delete -->
+                                <Button
+                                    Command="{Binding DeleteCommand}"
+                                    Height="40"
+                                    Width="40"
+                                    Padding="0"
+                                    ToolTip.Tip="Delete">
+                                    <material:MaterialIcon
+                                        Kind="TrashCanOutline"
+                                        Height="16"
+                                        Width="16"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Button>
+
+                            </StackPanel>
+
+                        </Grid>
+                    </suki:GlassCard>
+
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+        </ListBox>
+
+        <!-- =========================================================
+             ROW 3: Footer (Fixed)
+             ========================================================= -->
+        <Border Grid.Row="3" Padding="0,12,0,0">
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="10">
+
+                <Button
+                    Command="{Binding RefreshCommand}"
+                    Content="Refresh"
+                    Height="36"
+                    Width="140" />
+
+                <Button
+                    Command="{Binding AddAccountCommand}"
+                    Content="Add Account"
+                    Height="36"
+                    Width="190" />
+
+                <Button
+                    Command="{Binding TestCommand}"
+                    Content="Test"
+                    Height="36"
+                    Width="140" />
+
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</UserControl>

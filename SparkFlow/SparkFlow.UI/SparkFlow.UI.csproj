@@ -1,0 +1,137 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- ========================================================= -->
+    <!-- SparkFlow.UI                                              -->
+    <!-- Desktop Client Application (Avalonia + SukiUI)            -->
+    <!-- ========================================================= -->
+    <PropertyGroup>
+        <!-- Windows GUI executable (no console window) -->
+        <OutputType>WinExe</OutputType>
+
+        <!-- Target framework -->
+        <TargetFramework>net9.0</TargetFramework>
+
+        <!-- Enable nullable reference types -->
+        <Nullable>enable</Nullable>
+
+        <!-- Windows manifest (icon, DPI awareness, etc.) -->
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+
+        <!-- Avalonia: compiled bindings for performance -->
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- ========================================================= -->
+        <!-- Resources                                                 -->
+        <!-- ========================================================= -->
+        <AvaloniaResource Include="Assets\**" />
+
+        <!-- Embed your theme + override files explicitly -->
+        <AvaloniaResource Include="Default_Theme\SukiWindowTheme.axaml" />
+        <AvaloniaResource Include="Default_Theme\WindowControlsButtonOverride.axaml" />
+    </ItemGroup>
+
+    <!-- ========================================================= -->
+    <!-- NuGet Dependencies                                        -->
+    <!-- ========================================================= -->
+    <ItemGroup>
+        <!-- =============================== -->
+        <!-- Avalonia Framework Core         -->
+        <!-- =============================== -->
+        <PackageReference Include="Avalonia" Version="11.3.12" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />
+
+        <!-- Optional: Linux Framebuffer support -->
+        <PackageReference Include="Avalonia.LinuxFramebuffer" Version="11.3.12" />
+
+        <!-- =============================== -->
+        <!-- Avalonia Controls / UI Extras   -->
+        <!-- =============================== -->
+        <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.3.12" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.4.1" />
+        <PackageReference Include="AvaloniaEdit.TextMate" Version="11.4.1" />
+
+        <!-- Debug-only UI diagnostics -->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+
+        <!-- =============================== -->
+        <!-- MVVM + Application Toolkit      -->
+        <!-- =============================== -->
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+
+        <!-- =============================== -->
+        <!-- UI Rendering & Visualization    -->
+        <!-- =============================== -->
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc6.1" />
+        <PackageReference Include="Markdown.Avalonia" Version="11.0.3-a1" />
+
+        <!-- Icons (Material Design) -->
+        <PackageReference Include="Material.Icons.Avalonia" Version="3.0.0-preview6" />
+
+        <!-- =============================== -->
+        <!-- Theme Engine (SukiUI)           -->
+        <!-- =============================== -->
+        <PackageReference Include="SukiUI" Version="6.0.4-nightly20260124" />
+
+        <!-- =============================== -->
+        <!-- Developer Tools (Optional)      -->
+        <!-- =============================== -->
+        <PackageReference Include="ShowMeTheXaml.Avalonia" Version="1.5.2" />
+        <PackageReference Include="ShowMeTheXaml.Avalonia.Generator" Version="1.5.2" />
+    </ItemGroup>
+
+    <!-- ========================================================= -->
+    <!-- XAML CodeBehind File Mapping                               -->
+    <!-- ========================================================= -->
+    <ItemGroup>
+        <!-- Main Window -->
+        <Compile Update="Views\Shell\MainWindow.axaml.cs">
+            <DependentUpon>MainWindow.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+
+        <!-- Dialog Content -->
+        <Compile Update="Views\Dialogs\Contents\AccountHealthCheckDialogContent.axaml.cs">
+            <DependentUpon>AccountHealthCheckDialogContent.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+    </ItemGroup>
+
+    <!-- ========================================================= -->
+    <!-- Project References                                        -->
+    <!-- ========================================================= -->
+    <ItemGroup>
+        <ProjectReference Include="..\..\Libraries\AdbLib\AdbLib.csproj" />
+        <ProjectReference Include="..\..\Libraries\EmulatorLib\EmulatorLib.csproj" />
+        <ProjectReference Include="..\..\Libraries\GameContracts\GameContracts.csproj" />
+        <ProjectReference Include="..\..\Libraries\SettingsStore\SettingsStore.csproj" />
+
+        <ProjectReference Include="..\SparkFlow.Abstractions\SparkFlow.Abstractions.csproj" />
+        <ProjectReference Include="..\SparkFlow.Domain\SparkFlow.Domain.csproj" />
+        <ProjectReference Include="..\SparkFlow.Infrastructure\SparkFlow.Infrastructure.csproj" />
+
+        <!-- ✅ NEW: required for AddCoreServices() -->
+        <ProjectReference Include="..\SparkFlow.Engine\SparkFlow.Engine.csproj" />
+        <ProjectReference Include="..\SparkFlow.Bootstrap\SparkFlow.Bootstrap.csproj" />
+    </ItemGroup>
+
+    <!-- ========================================================= -->
+    <!-- Bundled Runtime Tools (Owner ADB)                         -->
+    <!-- ========================================================= -->
+    <ItemGroup>
+        <!-- Copy bundled platform-tools into output directory -->
+        <Content Include="Assets\platform-tools\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Models\" />
+    </ItemGroup>
+</Project>

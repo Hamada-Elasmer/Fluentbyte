@@ -1,0 +1,74 @@
+﻿<!--
+    SidebarNavigationStyles.axaml
+    
+    Purpose:
+    - Provides consistent styling for the sidebar navigation buttons.
+    - Uses class-based styling (no triggers):
+    - "WindowControlsButton" is the base class for all sidebar buttons.
+    - "is-active" is added to the active button to apply highlighted styling.
+    
+    Expected usage:
+    - Each sidebar Button should have its Classes set to:
+    - "WindowControlsButton" (always)
+    - "WindowControlsButton is-active" (when active)
+-->
+
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:material="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!--  Add Controls for Previewer Here  -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!--  Add Styles Here  -->
+    <!--
+        =========================================================
+        Base Sidebar Button Style (Inactive)
+        Applies to: Button.WindowControlsButton
+        =========================================================
+    -->
+    <Style Selector="Button.WindowControlsButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Foreground" Value="{DynamicResource SukiText}" />
+    </Style>
+
+    <!--  Icon inherits correct color in inactive state  -->
+    <Style Selector="Button.WindowControlsButton material|MaterialIcon">
+        <Setter Property="Foreground" Value="{DynamicResource SukiText}" />
+    </Style>
+
+    <!--  Text inherits correct color in inactive state  -->
+    <Style Selector="Button.WindowControlsButton TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource SukiText}" />
+    </Style>
+
+    <!--  Optional hover feel for inactive buttons  -->
+    <Style Selector="Button.WindowControlsButton:pointerover">
+        <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor25}" />
+    </Style>
+
+    <!--
+        =========================================================
+        Active Sidebar Button Style
+        Applies to: Button.WindowControlsButton.is-active
+        =========================================================
+    -->
+    <Style Selector="Button.WindowControlsButton.is-active">
+        <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <Style Selector="Button.WindowControlsButton.is-active material|MaterialIcon">
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <Style Selector="Button.WindowControlsButton.is-active TextBlock">
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+</Styles>

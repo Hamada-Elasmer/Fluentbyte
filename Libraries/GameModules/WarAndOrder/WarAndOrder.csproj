@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Root namespace matches folder structure: GameModules/WarAndOrder -->
+    <RootNamespace>GameModules.WarAndOrder</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AdbLib\AdbLib.csproj" />
+    <ProjectReference Include="..\..\EmulatorLib\EmulatorLib.csproj" />
+    <ProjectReference Include="..\..\GameContracts\GameContracts.csproj" />
+    <ProjectReference Include="..\..\UtiliLib\UtiliLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- DI extension uses Microsoft.Extensions.DependencyInjection -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,160 @@
+<!--
+    ==========================================================================
+    SparkFlow File Header
+    File: SparkFlow.UI/Views/Dialogs/Contents/AccountHealthCheckDialogContent.axaml
+    =========================================================================
+-->
+<UserControl
+    mc:Ignorable="d"
+    x:Class="SparkFlow.UI.Views.Dialogs.Contents.AccountHealthCheckDialogContent"
+    x:DataType="contents:AccountHealthCheckDialogContentViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:contents="clr-namespace:SparkFlow.UI.ViewModels.Dialogs.Contents"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:health1="clr-namespace:SparkFlow.UI.Converters.Health"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <health1:HealthStateToIconConverter x:Key="HealthStateToIconConverter" />
+        <health1:HealthRowIconBrushConverter x:Key="HealthRowIconBrush" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+
+        <Style Selector="TextBlock.health-row">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.health-row[Tag=Ok]">
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.health-row[Tag=Warning]">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.health-row[Tag=Error]">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
+
+    </UserControl.Styles>
+
+    <!--  🔹 3 Rows Layout  -->
+    <Grid Margin="20" RowDefinitions="Auto,*,Auto">
+
+        <!--  HEADER (Fixed Top)  -->
+        <StackPanel Spacing="10">
+            <Separator />
+        </StackPanel>
+
+        <!--  SCROLLABLE CONTENT  -->
+        <ScrollViewer
+            Grid.Row="1"
+            HorizontalScrollBarVisibility="Disabled"
+            Margin="0,15,0,15"
+            VerticalScrollBarVisibility="Auto">
+
+            <StackPanel Spacing="20">
+
+                <!--  Status notification  -->
+                <Border
+                    Background="{Binding StatusNotifType, Converter={StaticResource NotifBgConv}}"
+                    CornerRadius="8"
+                    Padding="10">
+
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <TextBlock
+                            FontSize="16"
+                            Foreground="{Binding StatusNotifType, Converter={StaticResource NotifFgConv}}"
+                            Text="{Binding StatusNotifType, Converter={StaticResource NotifIconConv}}"
+                            VerticalAlignment="Center" />
+
+                        <TextBlock
+                            FontSize="12"
+                            FontWeight="Bold"
+                            Foreground="{Binding StatusNotifType, Converter={StaticResource NotifFgConv}}"
+                            Grid.Column="1"
+                            Text="{Binding StatusText}"
+                            VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+
+                <!--  Rows  -->
+                <ItemsControl ItemsSource="{Binding Rows}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="20" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="contents:UiHealthRow">
+
+                            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto,Auto">
+
+                                <!--  Title  -->
+                                <TextBlock
+                                    Classes="health-row"
+                                    Tag="{Binding State}"
+                                    Text="{Binding Title}"
+                                    VerticalAlignment="Center" />
+
+                                <!--  Icon (Material Icons Avalonia)  -->
+                                <mi:MaterialIcon
+                                    FontSize="16"
+                                    Foreground="{Binding State, Converter={StaticResource HealthRowIconBrush}}"
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Height="16"
+                                    Kind="{Binding State, Converter={StaticResource HealthStateToIconConverter}}"
+                                    VerticalAlignment="Center"
+                                    Width="16" />
+
+                                <!--  Message  -->
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    Grid.Row="1"
+                                    Opacity=".75"
+                                    Text="{Binding Message}"
+                                    TextWrapping="Wrap" />
+
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!--  FOOTER (Fixed Bottom Buttons)  -->
+        <Border Grid.Row="2" Padding="10,15,0,0">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+
+                <TextBlock
+                    FontSize="11"
+                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                    Opacity=".75"
+                    Text="{Binding LastCheckedText}"
+                    VerticalAlignment="Center" />
+
+                <Button
+                    Command="{Binding RecheckCommand}"
+                    Content="Recheck"
+                    Grid.Column="1" />
+
+                <Button
+                    Command="{Binding FixFirstCommand}"
+                    Content="Fix All"
+                    Grid.Column="2" />
+
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>
+

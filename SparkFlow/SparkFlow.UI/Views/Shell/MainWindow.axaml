@@ -1,0 +1,178 @@
+<!--
+    MainWindow.axaml
+    Root shell window for the SparkFlow UI.
+
+    Responsibilities:
+    - Hosts the application chrome (titlebar + window behavior)
+    - Provides global overlay hosts (toasts + dialogs)
+    - Defines the main shell layout:
+      Left  = Sidebar navigation
+      Right = Current active page
+-->
+<suki:SukiWindow
+    x:Class="SparkFlow.UI.Views.Shell.MainWindow"
+    x:DataType="shell:MainWindowViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shell="clr-namespace:SparkFlow.UI.ViewModels.Shell"
+    xmlns:suki="https://github.com/kikipoulet/SukiUI"
+    xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:notifViews="clr-namespace:SparkFlow.UI.Views.Notifications"
+    mc:Ignorable="d"
+    d:DesignHeight="650"
+    d:DesignWidth="1280"
+    Title="SparkFlow Automation Platform"
+    Icon="/Assets/avalonia-logo.ico"
+    WindowStartupLocation="CenterScreen"
+    IsMenuVisible="False"
+    IsTitleBarVisible="True"
+    ShowBottomBorder="False"
+    ShowTitlebarBackground="False"
+    TitleBarControlSize="12"
+    TitleFontSize="14"
+    TitleFontWeight="SemiBold"
+    TitleTextWrapping="NoWrap"
+    CanResize="True"
+    CanMinimize="True"
+    CanMaximize="True"
+    CanFullScreen="True"
+    CanPin="False"
+    BackgroundAnimationEnabled="True"
+    BackgroundStyle="Bubble"
+    BackgroundTransitionsEnabled="True">
+
+    <!-- =========================================================
+         Titlebar Context Menu
+         ========================================================= -->
+    <suki:SukiWindow.TitleBarContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Custom TitleBar Context Menu Item" />
+        </ContextMenu>
+    </suki:SukiWindow.TitleBarContextMenu>
+
+    <!-- =========================================================
+         Global Overlay Hosts (Toasts + Dialogs)
+         ========================================================= -->
+    <suki:SukiWindow.Hosts>
+        <suki:SukiToastHost Manager="{Binding ToastManager}" />
+        <suki:SukiDialogHost Manager="{Binding DialogManager}" />
+    </suki:SukiWindow.Hosts>
+
+    <!-- =========================================================
+         Shell Layout
+         Left  = Sidebar (SukiSideMenu)
+         Right = Current page + Footer + Notifications Overlay
+         ========================================================= -->
+    <Grid ColumnDefinitions="Auto,*">
+
+        <!-- =========================
+             Sidebar Navigation
+             ========================= -->
+        <suki:SukiSideMenu
+            Grid.Column="0"
+            IsSearchEnabled="False"
+            ItemsSource="{Binding Pages}"
+            SelectedItem="{Binding ActivePage}">
+
+            <suki:SukiSideMenu.ItemTemplate>
+                <DataTemplate>
+                    <suki:SukiSideMenuItem Header="{Binding Title}" Classes="Compact">
+                        <suki:SukiSideMenuItem.Icon>
+                            <mi:MaterialIcon
+                                Width="12"
+                                Height="12"
+                                Kind="{Binding Icon}"
+                                Foreground="{DynamicResource SukiText}" />
+                        </suki:SukiSideMenuItem.Icon>
+                    </suki:SukiSideMenuItem>
+                </DataTemplate>
+            </suki:SukiSideMenu.ItemTemplate>
+
+        </suki:SukiSideMenu>
+
+        <!-- =========================
+             Right Content (Page + Footer + Overlay)
+             ========================= -->
+        <Grid Grid.Column="1" RowDefinitions="*,Auto">
+
+    <!-- Dynamic Page Content -->
+    <ContentControl Grid.Row="0" Content="{Binding CurrentPage}" />
+
+    <!-- Footer -->
+    <Border
+        Grid.Row="1"
+        Margin="5"
+        Padding="20,10,10,10"
+        BorderThickness="1,0,0,0">
+
+        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Bottom">
+
+            <!-- LEFT SIDE -->
+            <Grid Grid.Column="0" RowDefinitions="Auto,Auto" RowSpacing="8">
+
+                <StackPanel
+                    Grid.Row="0"
+                    DataContext="{Binding AppControl}"
+                    Orientation="Horizontal"
+                    Spacing="10">
+
+                    <Button Classes="Danger"
+                            Command="{Binding StartCommand}"
+                            Content="Start"
+                            Height="35"
+                            IsVisible="{Binding StartVisible}"
+                            Width="100" />
+
+                    <Button Command="{Binding PauseCommand}"
+                            Content="{Binding PauseButtonText}"
+                            Height="35"
+                            IsVisible="{Binding PauseVisible}"
+                            Width="100" />
+
+                    <Button Command="{Binding StopCommand}"
+                            Content="Stop"
+                            Height="35"
+                            IsVisible="{Binding StopVisible}"
+                            Width="100" />
+
+                    <CheckBox Content="Auto-Restart"
+                              IsChecked="{Binding AutoRestart}"
+                              VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="1"
+                            Margin="0,7,0,0"
+                            Orientation="Horizontal"
+                            Spacing="12">
+
+                    <TextBlock FontWeight="SemiBold"
+                               Opacity="0.65"
+                               Text="{Binding AppInfo.Version, StringFormat='Version {0}'}" />
+
+                    <Separator Width="1" />
+                </StackPanel>
+
+            </Grid>
+
+            <!-- RIGHT SIDE -->
+            <StackPanel Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Orientation="Vertical"
+                        Spacing="4">
+                <TextBlock FontWeight="SemiBold"
+                           Opacity="0.65"
+                           Text="{Binding AppInfo.FooterText}" />
+            </StackPanel>
+
+        </Grid>
+    </Border>
+
+</Grid>
+
+
+    </Grid>
+
+</suki:SukiWindow>

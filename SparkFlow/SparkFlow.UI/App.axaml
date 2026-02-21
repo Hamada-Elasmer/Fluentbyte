@@ -1,0 +1,81 @@
+<Application
+    RequestedThemeVariant="Dark"
+    x:Class="SparkFlow.UI.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:health="clr-namespace:SparkFlow.UI.Converters.Health"
+    xmlns:local="clr-namespace:SparkFlow.UI"
+    xmlns:notification="clr-namespace:SparkFlow.UI.Converters.Notification"
+    xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  =====================================================  -->
+    <!--  Styles (Theme + Libraries + Your local styles files)  -->
+    <!--  Notes:  -->
+    <!--  - FluentTheme provides base brushes/resources.  -->
+    <!--  - SukiTheme provides Suki resources (SukiText, etc).  -->
+    <!--  - Local StyleInclude matches your existing files.  -->
+    <!--  =====================================================  -->
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+
+    <!--  =========================================================  -->
+    <!--  RESOURCES (ResourceDictionary / ControlTheme files)  -->
+    <!--  =========================================================  -->
+    <Application.Resources>
+        <!-- Make ResourceDictionary the single container for all resources.
+             Move converters and other resources inside this dictionary so every
+             item added to the IDictionary has either an x:Key or is a merged dictionary. -->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+
+                <!--
+                    Your custom SukiWindow ControlTheme (ResourceDictionary).
+                    IMPORTANT: This file is NOT <Styles>, so it belongs here.
+                -->
+                <ResourceInclude Source="avares://SparkFlow.UI/Default_Theme/SukiWindowTheme.axaml" />
+
+                <!--  Any other ResourceDictionary-based files  -->
+                <ResourceInclude Source="avares://SparkFlow.UI/Styles/CompletionWindowStyles.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+        <!--  Notification converters  -->
+        <notification:NotificationTypeToBackgroundConverter x:Key="NotifBgConv" />
+        <notification:NotificationTypeToForegroundConverter x:Key="NotifFgConv" />
+        <notification:NotificationTypeToIconConverter x:Key="NotifIconConv" />
+
+        <!--  Health converters  -->
+        <health:HealthStateToIconConverter x:Key="HealthStateToIconConverter" />
+
+    </Application.Resources>
+    <!--  =====================================================  -->
+    <!--  Resources (Converters, etc.)  -->
+    <!--  =====================================================  -->
+
+    <Application.Styles>
+        <!--  Base Avalonia theme  -->
+        <FluentTheme />
+
+        <!-- REQUIRED FOR Material.Icons.Avalonia -->
+        <mi:MaterialIconStyles />
+
+        <!--  Suki theme  -->
+        <sukiUi:SukiTheme Locale="en-US"  ThemeColor="Red" />
+
+        <!--  Your local styles  -->
+        <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+        <StyleInclude Source="avares://SparkFlow.UI/Styles/ShowMeTheXamlStyles.axaml" />
+        <StyleInclude Source="avares://SparkFlow.UI/Styles/WrapPanelStyles.axaml" />
+        <StyleInclude Source="avares://SparkFlow.UI/Styles/TextStyles.axaml" />
+        <StyleInclude Source="avares://SparkFlow.UI/Styles/GlassCardStyles.axaml" />
+        <StyleInclude Source="avares://SparkFlow.UI/Styles/MaterialIconStyles.axaml" />
+
+        <!--  MUST BE LAST: titlebar buttons override  -->
+        <StyleInclude Source="avares://SparkFlow.UI/Default_Theme/WindowControlsButtonOverride.axaml" />
+    </Application.Styles>
+
+
+</Application>

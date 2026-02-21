@@ -1,0 +1,28 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:suki="https://github.com/kikipoulet/SukiUI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  Existing style  -->
+    <Style Selector="suki|GlassCard.HeaderCard">
+        <Setter Property="Margin" Value="30,30,30,1" />
+    </Style>
+
+    <!--  =====================================================  -->
+    <!--  Window TitleBar Buttons (Demo-like Style)  -->
+    <!--  Enables: Classes="WindowControlsButton"  -->
+    <!--  =====================================================  -->
+    <Style Selector="Button.WindowControlsButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!--  Hover effect  -->
+    <Style Selector="Button.WindowControlsButton:pointerover">
+        <Setter Property="Background" Value="#22FFFFFF" />
+    </Style>
+
+</Styles>

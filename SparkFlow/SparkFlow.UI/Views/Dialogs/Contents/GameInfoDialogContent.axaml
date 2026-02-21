@@ -1,0 +1,60 @@
+<!--
+    ==========================================================================
+    SparkFlow File Header
+    File: SparkFlowBot/SparkFlowBot.UI/Views/Dialogs/Contents/GameInfoDialogContent.axaml
+    Purpose: UI markup for the SparkFlow application.
+    Notes: Comments are kept in English for consistency.
+    =========================================================================
+-->
+<controls:UserControl
+    mc:Ignorable="d"
+    x:Class="SparkFlow.UI.Views.Dialogs.Contents.GameInfoDialogContent"
+    x:DataType="contents:GameInfoDialogContentViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:contents="clr-namespace:SparkFlow.UI.ViewModels.Dialogs.Contents"
+    xmlns:controls="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel Margin="0" Spacing="12">
+
+        <TextBlock
+            FontSize="18"
+            FontWeight="SemiBold"
+            Text="Game Info" />
+
+        <Grid
+            ColumnDefinitions="Auto,*"
+            ColumnSpacing="12"
+            RowDefinitions="Auto,Auto"
+            RowSpacing="10">
+
+            <TextBlock
+                Grid.Column="0"
+                Grid.Row="0"
+                Opacity="0.8"
+                Text="Name" />
+            <TextBlock
+                Grid.Column="1"
+                Grid.Row="0"
+                Text="{Binding GameName}" />
+
+            <TextBlock
+                Grid.Column="0"
+                Grid.Row="1"
+                Opacity="0.8"
+                Text="Version" />
+            <TextBlock
+                Grid.Column="1"
+                Grid.Row="1"
+                Text="{Binding GameVersion}" />
+        </Grid>
+
+        <TextBlock
+            IsVisible="{Binding IsLoading}"
+            Opacity="0.7"
+            Text="Loading…" />
+
+    </StackPanel>
+</controls:UserControl>

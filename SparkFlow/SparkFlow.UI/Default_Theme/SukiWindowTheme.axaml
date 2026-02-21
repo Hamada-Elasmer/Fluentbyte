@@ -1,0 +1,248 @@
+<!--
+    SukiWindowTheme.axaml (Conflict-Free)
+    
+    Purpose:
+    - Defines ONLY the SukiWindow ControlTheme + ControlTemplate structure (TitleBar layout + ContentPresenter).
+    - DOES NOT style WindowControlsButton hover/pressed/centering.
+    Those MUST be handled by WindowControlsButtonOverride.axaml to avoid conflicts.
+    
+    Why this avoids conflicts:
+    - We removed all template-scoped Styles that target:
+    1) Button.WindowControlsButton
+    2) Button.WindowControlsButton PathIcon
+    3) Button#PART_CloseButton hover/pressed logic using PART_CloseHoverSurface
+    - The Close button is now a normal button with a PathIcon inside (no inner Border surface).
+    The Windows-like red hover fill is applied by the override file on the Button itself.
+-->
+
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:SukiUI.Content;assembly=SukiUI"
+    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        =========================================================
+        DESIGN PREVIEW (Designer only)
+        =========================================================
+    -->
+    <Design.PreviewWith>
+        <suki:SukiWindow
+            CanFullScreen="True"
+            CanPin="True"
+            Height="400"
+            Title="SukiUI Window Preview"
+            TitleBarControlSize="12"
+            TitleTextWrapping="Wrap"
+            Width="600">
+            <suki:SukiWindow.LogoContent>
+                <PathIcon
+                    Data="{x:Static icons:Icons.CircleInformation}"
+                    Foreground="Goldenrod"
+                    Height="20"
+                    Width="20" />
+            </suki:SukiWindow.LogoContent>
+
+            <suki:GlassCard Margin="20">
+                <suki:GroupBox Header="SukiUI">
+                    <SelectableTextBlock Text="Preview content..." TextWrapping="Wrap" />
+                </suki:GroupBox>
+            </suki:GlassCard>
+        </suki:SukiWindow>
+    </Design.PreviewWith>
+
+    <!--
+        =========================================================
+        MAIN THEME
+        =========================================================
+    -->
+    <ControlTheme TargetType="suki:SukiWindow" x:Key="SukiWindowTheme">
+
+        <!--  Base window settings  -->
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="TransparencyLevelHint" Value="Transparent" />
+        <Setter Property="SystemDecorations" Value="{OnPlatform Full, Linux=None, x:TypeArguments=SystemDecorations}" />
+        <Setter Property="ExtendClientAreaChromeHints" Value="NoChrome" />
+        <Setter Property="ExtendClientAreaTitleBarHeightHint" Value="-1" />
+        <Setter Property="ExtendClientAreaToDecorationsHint" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource SukiText}" />
+        <Setter Property="FlowDirection" Value="{DynamicResource FlowDirectionPrimary}" />
+
+        <!--
+            =========================================================
+            IMPORTANT:
+            We intentionally DO NOT place styles here for:
+            - Button.WindowControlsButton
+            - Button.WindowControlsButton PathIcon
+            - Close hover/pressed painting
+            These are handled globally in WindowControlsButtonOverride.axaml
+            =========================================================
+        -->
+
+        <!--
+            =========================================================
+            WINDOW TEMPLATE
+            =========================================================
+        -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Margin="{TemplateBinding Margin}" Name="PART_Root">
+
+                    <suki:SukiMainHost
+                        BackgroundAnimationEnabled="{TemplateBinding BackgroundAnimationEnabled}"
+                        BackgroundForceSoftwareRendering="{TemplateBinding BackgroundForceSoftwareRendering}"
+                        BackgroundShaderCode="{TemplateBinding BackgroundShaderCode}"
+                        BackgroundShaderFile="{TemplateBinding BackgroundShaderFile}"
+                        BackgroundStyle="{TemplateBinding BackgroundStyle}"
+                        BackgroundTransitionTime="{TemplateBinding BackgroundTransitionTime}"
+                        BackgroundTransitionsEnabled="{TemplateBinding BackgroundTransitionsEnabled}"
+                        CornerRadius="{TemplateBinding RootCornerRadius}"
+                        Foreground="{TemplateBinding Foreground}"
+                        Hosts="{Binding Hosts, RelativeSource={RelativeSource AncestorType={x:Type suki:SukiWindow}}}">
+
+                        <DockPanel LastChildFill="True">
+
+                            <!--  ================= TITLE BAR =================  -->
+                            <Panel ContextMenu="{TemplateBinding TitleBarContextMenu}" DockPanel.Dock="Top">
+
+                                <StackPanel>
+
+                                    <LayoutTransformControl Name="PART_TitleBar" RenderTransformOrigin="0%,0%">
+
+                                        <Panel>
+
+                                            <!--  Titlebar background  -->
+                                            <suki:GlassCard
+                                                BorderThickness="0"
+                                                CornerRadius="0"
+                                                IsAnimated="False"
+                                                IsVisible="{TemplateBinding ShowTitlebarBackground}"
+                                                Name="PART_TitleBarBackground" />
+
+                                            <DockPanel LastChildFill="True" Margin="12,9">
+
+                                                <!--  Right-side window buttons  -->
+                                                <StackPanel
+                                                    DockPanel.Dock="Right"
+                                                    Orientation="Horizontal"
+                                                    Spacing="7"
+                                                    VerticalAlignment="Center">
+
+                                                    <!--  Keep icon size synced with TitleBarControlSize  -->
+                                                    <StackPanel.Styles>
+                                                        <Style Selector="PathIcon">
+                                                            <Setter Property="Width" Value="{TemplateBinding TitleBarControlSize}" />
+                                                            <Setter Property="Height" Value="{TemplateBinding TitleBarControlSize}" />
+                                                        </Style>
+                                                    </StackPanel.Styles>
+
+                                                    <!--  Optional custom titlebar controls  -->
+                                                    <ItemsControl ItemsSource="{TemplateBinding RightWindowTitleBarControls}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <StackPanel FlowDirection="{DynamicResource FlowDirectionOpposite}" Orientation="Horizontal" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                    </ItemsControl>
+
+                                                    <!--  FullScreen  -->
+                                                    <Button
+                                                        Classes="WindowControlsButton"
+                                                        IsVisible="{TemplateBinding CanFullScreen}"
+                                                        Name="PART_FullScreenButton">
+                                                        <PathIcon Data="{x:Static icons:Icons.WindowFullScreen}" x:Name="FullScreenIcon" />
+                                                    </Button>
+
+                                                    <!--  Pin  -->
+                                                    <Button
+                                                        Classes="WindowControlsButton"
+                                                        IsVisible="{TemplateBinding CanPin}"
+                                                        Name="PART_PinButton">
+                                                        <PathIcon Data="{x:Static icons:Icons.WindowPin}" x:Name="PinIcon" />
+                                                    </Button>
+
+                                                    <!--  Minimize  -->
+                                                    <Button
+                                                        Classes="WindowControlsButton"
+                                                        IsVisible="{TemplateBinding CanMinimize}"
+                                                        Name="PART_MinimizeButton">
+                                                        <PathIcon Data="{x:Static icons:Icons.WindowMinimize}" />
+                                                    </Button>
+
+                                                    <!--  Maximize  -->
+                                                    <Button
+                                                        Classes="WindowControlsButton"
+                                                        IsVisible="{TemplateBinding CanMaximize}"
+                                                        Name="PART_MaximizeButton">
+                                                        <PathIcon Data="{x:Static icons:Icons.WindowMaximize}" x:Name="MaximizeIcon" />
+                                                    </Button>
+
+                                                    <!--
+                                                        Close
+                                                        Note:
+                                                        - No special inner Border here.
+                                                        - The Windows red hover fill must be applied by WindowControlsButtonOverride.axaml
+                                                        - Keep the "Close" class because Suki relies on it semantically.
+                                                    -->
+                                                    <Button Classes="WindowControlsButton Close" Name="PART_CloseButton">
+                                                        <PathIcon Data="{x:Static icons:Icons.WindowClose}" Padding="0,0,10,0" />
+                                                    </Button>
+
+                                                </StackPanel>
+
+                                                <!--  Left side: Logo + Title  -->
+                                                <Grid
+                                                    ColumnDefinitions="Auto,*"
+                                                    ColumnSpacing="10"
+                                                    VerticalAlignment="Center">
+
+                                                    <ContentPresenter
+                                                        Background="Transparent"
+                                                        Content="{TemplateBinding LogoContent}"
+                                                        Grid.Column="0"
+                                                        Name="PART_Logo" />
+
+                                                    <TextBlock
+                                                        FontSize="{TemplateBinding TitleFontSize}"
+                                                        FontWeight="{TemplateBinding TitleFontWeight}"
+                                                        Grid.Column="1"
+                                                        IsHitTestVisible="False"
+                                                        Name="PART_TitleTextBlock"
+                                                        Text="{TemplateBinding Title}"
+                                                        TextWrapping="{TemplateBinding TitleTextWrapping}"
+                                                        VerticalAlignment="Center" />
+                                                </Grid>
+
+                                            </DockPanel>
+                                        </Panel>
+                                    </LayoutTransformControl>
+
+                                    <!--  Bottom border below titlebar  -->
+                                    <Border BorderBrush="{DynamicResource SukiBorderBrush}" Name="PART_BottomBorder" />
+
+                                </StackPanel>
+                            </Panel>
+
+                            <!--  ================= CONTENT =================  -->
+                            <ContentPresenter
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                CornerRadius="10"
+                                Padding="{TemplateBinding Padding}"
+                                x:Name="PART_ContentPresenter" />
+
+                        </DockPanel>
+                    </suki:SukiMainHost>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+    </ControlTheme>
+
+    <!--  Default theme application  -->
+    <ControlTheme
+        BasedOn="{StaticResource SukiWindowTheme}"
+        TargetType="suki:SukiWindow"
+        x:Key="{x:Type suki:SukiWindow}" />
+
+</ResourceDictionary>

@@ -1,0 +1,11 @@
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\bin\Debug\net9.0\SparkFlow.Domain.deps.json
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\bin\Debug\net9.0\SparkFlow.Domain.dll
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\bin\Debug\net9.0\SparkFlow.Domain.pdb
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\obj\Debug\net9.0\SparkFlow.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\obj\Debug\net9.0\SparkFlow.Domain.AssemblyInfoInputs.cache
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\obj\Debug\net9.0\SparkFlow.Domain.AssemblyInfo.cs
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\obj\Debug\net9.0\SparkFlow.Domain.csproj.CoreCompileInputs.cache
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\obj\Debug\net9.0\SparkFlow.Domain.dll
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\obj\Debug\net9.0\refint\SparkFlow.Domain.dll
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\obj\Debug\net9.0\SparkFlow.Domain.pdb
+D:\Fluentbyte\SparkFlow\SparkFlow.Domain\obj\Debug\net9.0\ref\SparkFlow.Domain.dll

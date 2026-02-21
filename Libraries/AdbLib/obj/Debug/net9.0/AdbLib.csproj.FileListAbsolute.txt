@@ -1,0 +1,17 @@
+D:\Fluentbyte\Libraries\AdbLib\bin\Debug\net9.0\AdbLib.deps.json
+D:\Fluentbyte\Libraries\AdbLib\bin\Debug\net9.0\AdbLib.dll
+D:\Fluentbyte\Libraries\AdbLib\bin\Debug\net9.0\AdbLib.pdb
+D:\Fluentbyte\Libraries\AdbLib\bin\Debug\net9.0\SettingsStore.dll
+D:\Fluentbyte\Libraries\AdbLib\bin\Debug\net9.0\UtiliLib.dll
+D:\Fluentbyte\Libraries\AdbLib\bin\Debug\net9.0\UtiliLib.pdb
+D:\Fluentbyte\Libraries\AdbLib\bin\Debug\net9.0\SettingsStore.pdb
+D:\Fluentbyte\Libraries\AdbLib\obj\Debug\net9.0\AdbLib.csproj.AssemblyReference.cache
+D:\Fluentbyte\Libraries\AdbLib\obj\Debug\net9.0\AdbLib.GeneratedMSBuildEditorConfig.editorconfig
+D:\Fluentbyte\Libraries\AdbLib\obj\Debug\net9.0\AdbLib.AssemblyInfoInputs.cache
+D:\Fluentbyte\Libraries\AdbLib\obj\Debug\net9.0\AdbLib.AssemblyInfo.cs
+D:\Fluentbyte\Libraries\AdbLib\obj\Debug\net9.0\AdbLib.csproj.CoreCompileInputs.cache
+D:\Fluentbyte\Libraries\AdbLib\obj\Debug\net9.0\AdbLib.csproj.Up2Date
+D:\Fluentbyte\Libraries\AdbLib\obj\Debug\net9.0\AdbLib.dll
+D:\Fluentbyte\Libraries\AdbLib\obj\Debug\net9.0\refint\AdbLib.dll
+D:\Fluentbyte\Libraries\AdbLib\obj\Debug\net9.0\AdbLib.pdb
+D:\Fluentbyte\Libraries\AdbLib\obj\Debug\net9.0\ref\AdbLib.dll

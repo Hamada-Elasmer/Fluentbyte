@@ -1,0 +1,144 @@
+<!--
+    ==========================================================================
+    SparkFlow File Header
+    File: SparkFlowBot/SparkFlowBot.UI/Views/Pages/HomePageView.axaml
+    Purpose: UI markup for the SparkFlow application.
+    Notes: Comments are kept in English for consistency.
+    =========================================================================
+-->
+<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="SparkFlow.UI.Views.Pages.HomePageView"
+    x:DataType="home:HomePageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:home="clr-namespace:SparkFlow.UI.ViewModels.Pages.Home"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:suki="https://github.com/kikipoulet/SukiUI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer Padding="20,20,20,0">
+        <StackPanel Spacing="20">
+
+            <!--  Header Section  -->
+            <StackPanel Spacing="10">
+                <TextBlock
+                    FontSize="22"
+                    FontWeight="Bold"
+                    Text="{Binding AppInfo.AppTitle}" />
+
+                <TextBlock
+                    FontSize="14"
+                    Opacity="0.65"
+                    Text="The AI-powered tool for professional management of your strategic game accounts." />
+
+                <Separator />
+            </StackPanel>
+
+            <!--  Features Section  -->
+            <ItemsControl ItemsSource="{Binding Features}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="home:FeatureCardViewModel">
+                        <Grid
+                            Height="150"
+                            Margin="5"
+                            Width="230">
+
+                            <!--  Feature Card (Suki GlassCard)  -->
+                            <suki:GlassCard
+                                CornerRadius="12"
+                                Padding="15">
+
+                                <!-- Hover effect (optional) -->
+                                <suki:GlassCard.Styles>
+                                    <Style Selector="suki|GlassCard:pointerover">
+                                        <Setter Property="Opacity" Value="0.92" />
+                                    </Style>
+                                </suki:GlassCard.Styles>
+
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    Spacing="6"
+                                    VerticalAlignment="Center">
+
+                                    <TextBlock
+                                        FontSize="16"
+                                        FontWeight="SemiBold"
+                                        HorizontalAlignment="Center"
+                                        Text="{Binding Name}" />
+
+                                    <Separator />
+
+                                    <TextBlock
+                                        FontSize="13"
+                                        Opacity="0.85"
+                                        HorizontalAlignment="Center"
+                                        Text="{Binding Description}"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </suki:GlassCard>
+
+                            <!--  NEW Badge  -->
+                            <Border
+                                Background="#22C55E"
+                                CornerRadius="10"
+                                HorizontalAlignment="Right"
+                                IsVisible="{Binding IsNew}"
+                                Margin="0,6,6,0"
+                                Padding="6,2"
+                                VerticalAlignment="Top">
+                                <TextBlock
+                                    FontSize="10"
+                                    FontWeight="Bold"
+                                    Foreground="White"
+                                    Text="NEW" />
+                            </Border>
+
+                            <!--  UPDATED Badge  -->
+                            <Border
+                                Background="#F59E0B"
+                                CornerRadius="10"
+                                HorizontalAlignment="Right"
+                                IsVisible="{Binding IsUpdated}"
+                                Margin="0,6,6,0"
+                                Padding="6,2"
+                                VerticalAlignment="Top">
+                                <TextBlock
+                                    FontSize="10"
+                                    FontWeight="Bold"
+                                    Foreground="Black"
+                                    Text="UPDATED" />
+                            </Border>
+
+                            <!--  SOON Badge  -->
+                            <Border
+                                Background="#6366F1"
+                                CornerRadius="10"
+                                HorizontalAlignment="Right"
+                                IsVisible="{Binding IsSoon}"
+                                Margin="0,6,6,0"
+                                Padding="6,2"
+                                VerticalAlignment="Top">
+                                <TextBlock
+                                    FontSize="10"
+                                    FontWeight="Bold"
+                                    Foreground="White"
+                                    Text="SOON" />
+                            </Border>
+
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

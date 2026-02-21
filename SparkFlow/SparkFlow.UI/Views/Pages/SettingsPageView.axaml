@@ -1,0 +1,40 @@
+<UserControl
+    d:DesignHeight="650"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="SparkFlow.UI.Views.Pages.SettingsPageView"
+    x:DataType="settings:SettingsPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:settings="clr-namespace:SparkFlow.UI.ViewModels.Pages.Settings"
+    xmlns:sukiUi="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer Padding="18">
+        <StackPanel Spacing="16">
+
+            <!-- ✅ Your Support Card kept -->
+            <sukiUi:GlassCard CornerRadius="16" Padding="16">
+                <StackPanel Spacing="10">
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="Setup Wizard" />
+
+                    <TextBlock
+                        Opacity="0.85"
+                        Text="Re-run the setup wizard to review and validate the environment. This does not change security settings automatically."
+                        TextWrapping="Wrap" />
+
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        Text="Tip: If the Runner is currently running, stop it before re-running the wizard."
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </sukiUi:GlassCard>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

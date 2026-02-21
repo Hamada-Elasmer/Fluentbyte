@@ -1,0 +1,162 @@
+<!--
+    WindowControlsButtonOverride.axaml
+    
+    What this file does:
+    - Re-templates title-bar buttons ONLY to guarantee perfect centering.
+    - Makes Close hover/pressed background fill the entire button area (Windows-like).
+    - Does NOT affect sidebar navigation buttons.
+    
+    Usage:
+    1) Include AFTER SukiUI theme resources in App.axaml.
+    2) Keep it embedded as an Avalonia resource.
+-->
+
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:SukiUI.Content;assembly=SukiUI"
+    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        =========================================================
+        DESIGN PREVIEW (Designer only)
+        =========================================================
+    -->
+    <Design.PreviewWith>
+        <suki:SukiWindow
+            CanFullScreen="True"
+            CanPin="True"
+            Height="400"
+            Title="SukiUI Window Preview"
+            TitleBarControlSize="12"
+            TitleTextWrapping="Wrap"
+            Width="600">
+            <suki:SukiWindow.LogoContent>
+                <PathIcon
+                    Data="{x:Static icons:Icons.CircleInformation}"
+                    Foreground="Goldenrod"
+                    Height="20"
+                    Width="20" />
+            </suki:SukiWindow.LogoContent>
+
+            <suki:GlassCard Margin="20">
+                <suki:GroupBox Header="SukiUI">
+                    <SelectableTextBlock Text="Preview content..." TextWrapping="Wrap" />
+                </suki:GroupBox>
+            </suki:GlassCard>
+        </suki:SukiWindow>
+    </Design.PreviewWith>
+
+    <!--
+        =========================================================
+        IMPORTANT SCOPE RULE
+        We restrict the override to buttons that appear INSIDE a SukiWindow title bar area.
+        
+        Why:
+        - Your sidebar also uses "WindowControlsButton" class.
+        - A global override would break the sidebar look/size.
+    -->
+
+    <!--
+        =========================================================
+        TitleBar WindowControlsButton - Base (Scoped)
+        =========================================================
+    -->
+    <Style Selector="suki|SukiWindow Button.WindowControlsButton">
+
+        <!--  Fixed size (match Suki defaults)  -->
+        <Setter Property="Width" Value="25" />
+        <Setter Property="Height" Value="25" />
+
+        <!--  Critical for true centering  -->
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+
+        <!--  Visual defaults  -->
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Foreground" Value="{DynamicResource SukiText}" />
+
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Duration="0:0:0.08" Property="Background" />
+            </Transitions>
+        </Setter>
+
+        <!--
+            Template notes:
+            - Border is the full clickable surface.
+            - Grid forces true centering for any content.
+            - TextElement.Foreground makes Foreground inheritance reliable.
+        -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    Height="{TemplateBinding Height}"
+                    Name="RootBorder"
+                    Padding="0"
+                    TextElement.Foreground="{TemplateBinding Foreground}"
+                    Width="{TemplateBinding Width}">
+
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <ContentPresenter
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            Foreground="{TemplateBinding Foreground}"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            Margin="0"
+                            Name="PART_ContentPresenter"
+                            RecognizesAccessKey="True"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center" />
+                    </Grid>
+
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!--  Default hover for ALL titlebar buttons except Close  -->
+        <Style Selector="^:pointerover, ^:flyout-open">
+            <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor25}" />
+        </Style>
+
+        <Style Selector="^:pressed:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor25}" />
+        </Style>
+
+    </Style>
+
+    <!--
+        =========================================================
+        PathIcon inside titlebar WindowControlsButton (Scoped)
+        =========================================================
+    -->
+    <Style Selector="suki|SukiWindow Button.WindowControlsButton PathIcon">
+        <Setter Property="Width" Value="9" />
+        <Setter Property="Height" Value="9" />
+        <Setter Property="Margin" Value="0 0 .7 .6" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!--
+        =========================================================
+        Close button hover/pressed (Scoped)
+        =========================================================
+    -->
+    <Style Selector="suki|SukiWindow Button.WindowControlsButton.Close:pointerover, suki|SukiWindow Button.WindowControlsButton.Close:flyout-open">
+        <Setter Property="Background" Value="#E81123" />
+    </Style>
+
+    <Style Selector="suki|SukiWindow Button.WindowControlsButton.Close:pressed:pointerover">
+        <Setter Property="Background" Value="#C50F1F" />
+    </Style>
+
+</Styles>

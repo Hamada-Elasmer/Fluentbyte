@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Libraries\AdbLib\AdbLib.csproj" />
+        <ProjectReference Include="..\..\Libraries\EmulatorLib\EmulatorLib.csproj" />
+        <ProjectReference Include="..\..\Libraries\GameContracts\GameContracts.csproj" />
+        <ProjectReference Include="..\..\Libraries\SettingsStore\SettingsStore.csproj" />
+        <ProjectReference Include="..\SparkFlow.Domain\SparkFlow.Domain.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+</Project>

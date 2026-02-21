@@ -1,0 +1,15 @@
+D:\Fluentbyte\Libraries\UtiliLib\bin\Debug\net9.0\UtiliLib.deps.json
+D:\Fluentbyte\Libraries\UtiliLib\bin\Debug\net9.0\UtiliLib.dll
+D:\Fluentbyte\Libraries\UtiliLib\bin\Debug\net9.0\UtiliLib.pdb
+D:\Fluentbyte\Libraries\UtiliLib\bin\Debug\net9.0\SettingsStore.dll
+D:\Fluentbyte\Libraries\UtiliLib\bin\Debug\net9.0\SettingsStore.pdb
+D:\Fluentbyte\Libraries\UtiliLib\obj\Debug\net9.0\UtiliLib.csproj.AssemblyReference.cache
+D:\Fluentbyte\Libraries\UtiliLib\obj\Debug\net9.0\UtiliLib.GeneratedMSBuildEditorConfig.editorconfig
+D:\Fluentbyte\Libraries\UtiliLib\obj\Debug\net9.0\UtiliLib.AssemblyInfoInputs.cache
+D:\Fluentbyte\Libraries\UtiliLib\obj\Debug\net9.0\UtiliLib.AssemblyInfo.cs
+D:\Fluentbyte\Libraries\UtiliLib\obj\Debug\net9.0\UtiliLib.csproj.CoreCompileInputs.cache
+D:\Fluentbyte\Libraries\UtiliLib\obj\Debug\net9.0\UtiliLib.csproj.Up2Date
+D:\Fluentbyte\Libraries\UtiliLib\obj\Debug\net9.0\UtiliLib.dll
+D:\Fluentbyte\Libraries\UtiliLib\obj\Debug\net9.0\refint\UtiliLib.dll
+D:\Fluentbyte\Libraries\UtiliLib\obj\Debug\net9.0\UtiliLib.pdb
+D:\Fluentbyte\Libraries\UtiliLib\obj\Debug\net9.0\ref\UtiliLib.dll

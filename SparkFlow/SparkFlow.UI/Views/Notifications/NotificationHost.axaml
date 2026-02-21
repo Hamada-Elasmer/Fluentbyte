@@ -1,0 +1,87 @@
+<!--
+    ==========================================================================
+    SparkFlow File Header
+    File: SparkFlowBot/SparkFlowBot.UI/Views/Notifications/NotificationHost.axaml
+    Purpose: UI markup for the SparkFlow application.
+    Notes: Comments are kept in English for consistency.
+    =========================================================================
+-->
+<UserControl
+    x:Class="SparkFlow.UI.Views.Notifications.NotificationHost"
+    x:DataType="vm:NotificationHostViewModel"
+    x:Name="Root"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:notif="clr-namespace:UtiliLib.Notifications;assembly=UtiliLib"
+    xmlns:vm="clr-namespace:SparkFlow.UI.ViewModels.Notifications"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  Fixed DataContext  -->
+    <UserControl.DataContext>
+        <vm:NotificationHostViewModel />
+    </UserControl.DataContext>
+
+    <ItemsControl ItemsSource="{Binding Items}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel Spacing="8" />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+
+        <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="notif:NotificationItem">
+                <Border
+                    Background="{Binding Type, Converter={StaticResource NotifBgConv}}"
+                    CornerRadius="8"
+                    Padding="12"
+                    Width="360">
+
+                    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+
+                        <!--  Icon  -->
+                        <TextBlock
+                            FontSize="18"
+                            Foreground="{Binding Type, Converter={StaticResource NotifFgConv}}"
+                            Grid.RowSpan="2"
+                            Margin="0,0,10,0"
+                            Text="{Binding Type, Converter={StaticResource NotifIconConv}}"
+                            VerticalAlignment="Top" />
+
+                        <!--  Title  -->
+                        <TextBlock
+                            FontSize="14"
+                            FontWeight="Bold"
+                            Foreground="{Binding Type, Converter={StaticResource NotifFgConv}}"
+                            Grid.Column="1"
+                            Grid.Row="0"
+                            Text="{Binding Title}" />
+
+                        <!--  Close  -->
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding CloseCommand, ElementName=Root}"
+                            CommandParameter="{Binding}"
+                            Content="✕"
+                            Foreground="{Binding Type, Converter={StaticResource NotifFgConv}}"
+                            Grid.Column="2"
+                            Grid.Row="0"
+                            Padding="6,2" />
+
+                        <!--  Message  -->
+                        <TextBlock
+                            Foreground="{Binding Type, Converter={StaticResource NotifFgConv}}"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Margin="0,6,0,0"
+                            Opacity="0.95"
+                            Text="{Binding Message}"
+                            TextWrapping="Wrap" />
+                    </Grid>
+
+                </Border>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+</UserControl>
