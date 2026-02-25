@@ -1,20 +1,13 @@
 /* ============================================================================
  * SparkFlow File Header
  * File: Libraries/GameModules/WarAndOrder/Ports/Fakes/FakeDeviceAutomation.cs
- * Purpose: Library component: FakeDeviceAutomation.
- * Notes:
- *  - This file is part of the SparkFlow automation platform.
- *  - Comments are intentionally kept in English for consistency across the codebase.
+ * Purpose: Fake implementation of IDeviceAutomation for testing.
  * ============================================================================ */
+
+using GameModules.WarAndOrder.Ports;
 
 namespace GameModules.WarAndOrder.Ports.Fakes;
 
-/// <summary>
-/// A minimal fake implementation to allow unit testing of the module
-/// without a real emulator/ADB.
-/// 
-/// DO NOT use in production.
-/// </summary>
 public sealed class FakeDeviceAutomation : IDeviceAutomation
 {
     public Task<bool> IsPackageInstalledAsync(string deviceId, string packageName, CancellationToken ct)
@@ -37,4 +30,7 @@ public sealed class FakeDeviceAutomation : IDeviceAutomation
 
     public Task WaitForDeviceReadyAsync(string deviceId, CancellationToken ct)
         => Task.CompletedTask;
+
+    public Task<bool> IsProcessRunningAsync(string deviceId, string packageName, CancellationToken ct)
+        => Task.FromResult(false); // Fake always says "not running"
 }

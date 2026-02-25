@@ -11,7 +11,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using SparkFlow.Abstractions.Models;
@@ -40,13 +39,11 @@ public sealed class AccountHealthCheckDialogContentViewModel : ViewModelBase
         get => _boundProfileId;
         set
         {
-            value ??= "";
             if (string.Equals(_boundProfileId, value, StringComparison.OrdinalIgnoreCase)) return;
 
             _boundProfileId = value;
             OnPropertyChanged();
 
-            // Bind profile -> triggers activation + first run
             Activate(_boundProfileId);
         }
     }
@@ -63,7 +60,8 @@ public sealed class AccountHealthCheckDialogContentViewModel : ViewModelBase
             if (_isBusy == value) return;
             _isBusy = value;
             OnPropertyChanged();
-            RebindCommandStates();
+
+            RebindCommandStatesSafe();
         }
     }
 
@@ -74,7 +72,7 @@ public sealed class AccountHealthCheckDialogContentViewModel : ViewModelBase
         private set
         {
             if (string.Equals(_statusText, value, StringComparison.Ordinal)) return;
-            _statusText = value ?? "";
+            _statusText = value;
             OnPropertyChanged();
         }
     }
@@ -98,7 +96,7 @@ public sealed class AccountHealthCheckDialogContentViewModel : ViewModelBase
         private set
         {
             if (string.Equals(_lastCheckedText, value, StringComparison.Ordinal)) return;
-            _lastCheckedText = value ?? "-";
+            _lastCheckedText = value;
             OnPropertyChanged();
         }
     }
@@ -146,60 +144,44 @@ public sealed class AccountHealthCheckDialogContentViewModel : ViewModelBase
     {
         _log = MLogger.Instance;
 
-        // Recheck triggers a forced live run
         RecheckCommand = new AsyncRelayCommand(RecheckAsync, () => !IsBusy && IsReadyToRun());
-
-        // Fix All (Auto fixes only) + then Recheck
         FixFirstCommand = new AsyncRelayCommand(FixAllAsync, () => !IsBusy && IsReadyToRun() && Issues.Any(i => i.CanFix));
     }
 
-    /// <summary>
-    /// Inject the runner used to build the rows list (ItemsOrdered).
-    /// Must be set BEFORE BoundProfileId in dialog wiring to avoid the 3-row fallback.
-    /// </summary>
     public void SetRunner(HealthCheckRunner runner)
     {
         _runner = runner;
 
         if (!string.IsNullOrWhiteSpace(_profileId) && !IsBusy)
-        {
-            BuildInitialRows();
-        }
+            BuildInitialRowsSafe();
 
-        RebindCommandStates();
+        RebindCommandStatesSafe();
     }
 
-    /// <summary>
-    /// Inject the health service. If profile is already set, trigger a live run.
-    /// </summary>
     public void SetHealthService(IHealthCheckService health)
     {
         _health = health;
 
         if (!string.IsNullOrWhiteSpace(_profileId) && _cts is not null && !IsBusy)
-        {
             _ = RunLiveAsync(force: true);
-        }
 
-        RebindCommandStates();
+        RebindCommandStatesSafe();
     }
 
     public void Activate(string profileId)
     {
-        _profileId = profileId ?? "";
+        _profileId = profileId; // profileId هنا non-nullable
         _cts?.Cancel();
         _cts = new CancellationTokenSource();
 
-        BuildInitialRows();
+        BuildInitialRowsSafe();
 
         if (!IsReadyToRun())
         {
-            StatusText = "Idle";
-            StatusNotifType = NotificationType.Info;
+            _ = SetStatusUiAsync("Idle", NotificationType.Info);
             return;
         }
 
-        // Auto-run when opened
         _ = RunLiveAsync(force: true);
     }
 
@@ -209,34 +191,35 @@ public sealed class AccountHealthCheckDialogContentViewModel : ViewModelBase
         _cts = null;
     }
 
-    private void BuildInitialRows()
+    private void BuildInitialRowsSafe()
     {
-        Rows.Clear();
-        Issues.Clear();
-
-        // Build rows from runner ordered items (real full list)
-        if (_runner is not null)
+        Dispatcher.UIThread.Post(() =>
         {
-            foreach (var it in _runner.ItemsOrdered)
-                Rows.Add(UiHealthRow.Pending(it.Id, it.Title));
-        }
-        else
-        {
-            // Safe fallback so UI never crashes
-            Rows.Add(UiHealthRow.Pending(HealthCheckItemId.AdbRunning, "ADB"));
-            Rows.Add(UiHealthRow.Pending(HealthCheckItemId.RuntimeFolders, "RuntimeFolders"));
-            Rows.Add(UiHealthRow.Pending(HealthCheckItemId.DeviceReady, "Device Ready"));
-        }
+            Rows.Clear();
+            Issues.Clear();
 
-        StatusText = "Idle";
-        StatusNotifType = NotificationType.Info;
+            if (_runner is not null)
+            {
+                foreach (var it in _runner.ItemsOrdered)
+                    Rows.Add(UiHealthRow.Pending(it.Id, it.Title));
+            }
+            else
+            {
+                Rows.Add(UiHealthRow.Pending(HealthCheckItemId.AdbRunning, "ADB"));
+                Rows.Add(UiHealthRow.Pending(HealthCheckItemId.RuntimeFolders, "RuntimeFolders"));
+                Rows.Add(UiHealthRow.Pending(HealthCheckItemId.DeviceReady, "Device Ready"));
+            }
 
-        LastCheckedText = "-";
-        Blockers = 0;
-        Warnings = 0;
-        Infos = 0;
+            StatusText = "Idle";
+            StatusNotifType = NotificationType.Info;
 
-        RebindCommandStates();
+            LastCheckedText = "-";
+            Blockers = 0;
+            Warnings = 0;
+            Infos = 0;
+
+            RebindCommandStates();
+        });
     }
 
     private bool IsReadyToRun()
@@ -247,14 +230,13 @@ public sealed class AccountHealthCheckDialogContentViewModel : ViewModelBase
         return true;
     }
 
-    private Task RecheckAsync() => RunLiveAsync(force: true);
+    private global::System.Threading.Tasks.Task RecheckAsync() => RunLiveAsync(force: true);
 
-    private async Task FixAllAsync()
+    private async global::System.Threading.Tasks.Task FixAllAsync()
     {
         if (!IsReadyToRun())
         {
-            StatusText = "Idle";
-            StatusNotifType = NotificationType.Info;
+            await SetStatusUiAsync("Idle", NotificationType.Info);
             return;
         }
 
@@ -262,9 +244,8 @@ public sealed class AccountHealthCheckDialogContentViewModel : ViewModelBase
 
         try
         {
-            IsBusy = true;
-            StatusText = "Fixing...";
-            StatusNotifType = NotificationType.Info;
+            await SetBusyUiAsync(true);
+            await SetStatusUiAsync("Fixing...", NotificationType.Info);
 
             var res = await _health!.FixAllAutoAsync(_profileId, _cts.Token).ConfigureAwait(false);
 
@@ -279,39 +260,33 @@ public sealed class AccountHealthCheckDialogContentViewModel : ViewModelBase
                     4500);
             });
 
-            // Always recheck after FixAll
             await RunLiveAsync(force: true).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
-            StatusText = "Idle";
-            StatusNotifType = NotificationType.Info;
+            await SetStatusUiAsync("Idle", NotificationType.Info);
         }
         catch (Exception ex)
         {
-            StatusText = $"Fix failed: {ex.Message}";
-            StatusNotifType = NotificationType.Error;
-
+            await SetStatusUiAsync($"Fix failed: {ex.Message}", NotificationType.Error);
             _log.Error(LogChannel.SYSTEM, $"[HealthUI] FixAll failed: {ex}");
         }
         finally
         {
-            IsBusy = false;
+            await SetBusyUiAsync(false);
         }
     }
 
-    private async Task RunLiveAsync(bool force)
+    private async global::System.Threading.Tasks.Task RunLiveAsync(bool force)
     {
         if (!IsReadyToRun())
         {
-            StatusText = "Idle";
-            StatusNotifType = NotificationType.Info;
+            await SetStatusUiAsync("Idle", NotificationType.Info);
             return;
         }
 
         _cts!.Token.ThrowIfCancellationRequested();
 
-        // Progress handler updates rows LIVE (Pending/Running/Ok/Warning/Error)
         var progress = new Progress<(HealthCheckItemId id, HealthCheckItemState state, string message, HealthIssue? issue)>(t =>
         {
             Dispatcher.UIThread.Post(() =>
@@ -326,103 +301,119 @@ public sealed class AccountHealthCheckDialogContentViewModel : ViewModelBase
 
         try
         {
-            IsBusy = true;
-            StatusText = "Running...";
-            StatusNotifType = NotificationType.Info;
+            await SetBusyUiAsync(true);
+            await SetStatusUiAsync("Running...", NotificationType.Info);
 
-            foreach (var r in Rows)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                r.State = HealthCheckItemState.Pending;
-                r.Message = "";
-            }
+                foreach (var r in Rows)
+                {
+                    r.State = HealthCheckItemState.Pending;
+                    r.Message = "";
+                }
+            });
 
             var report = force
-                ? await _health!.RunLiveAsync(_profileId, progress, _cts.Token)
-                : await _health!.GetOrRunLiveAsync(_profileId, progress, maxAge: TimeSpan.FromMinutes(2), ct: _cts.Token);
+                ? await _health!.RunLiveAsync(_profileId, progress, _cts.Token).ConfigureAwait(false)
+                : await _health!.GetOrRunLiveAsync(_profileId, progress, maxAge: TimeSpan.FromMinutes(2), ct: _cts.Token).ConfigureAwait(false);
 
-            ApplyReport(report);
+            await ApplyReportUiAsync(report);
         }
         catch (OperationCanceledException)
         {
-            StatusText = "Idle";
-            StatusNotifType = NotificationType.Info;
+            await SetStatusUiAsync("Idle", NotificationType.Info);
         }
         catch (Exception ex)
         {
-            StatusText = $"Failed: {ex.Message}";
-            StatusNotifType = NotificationType.Error;
-
+            await SetStatusUiAsync($"Failed: {ex.Message}", NotificationType.Error);
             _log.Error(LogChannel.SYSTEM, $"[HealthUI] Run failed: {ex}");
         }
         finally
         {
-            IsBusy = false;
+            await SetBusyUiAsync(false);
         }
     }
 
-    private void ApplyReport(HealthReport report)
+    private async global::System.Threading.Tasks.Task ApplyReportUiAsync(HealthReport report)
     {
-        LastCheckedText = report.CheckedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss");
-
-        Issues.Clear();
-
-        foreach (var issue in report.Issues
-                     .OrderByDescending(i => i.Severity)
-                     .ThenBy(i => i.Title, StringComparer.OrdinalIgnoreCase))
+        await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            Issues.Add(new HealthIssueItemViewModel(issue));
-        }
+            LastCheckedText = report.CheckedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        Blockers = report.Issues.Count(i => i.Severity == HealthIssueSeverity.Blocker);
-        Warnings = report.Issues.Count(i => i.Severity == HealthIssueSeverity.Warning);
-        Infos = report.Issues.Count(i => i.Severity == HealthIssueSeverity.Info);
+            Issues.Clear();
 
-        switch (report.Status)
-        {
-            case SparkFlow.Domain.Models.Pages.HealthStatus.Ok:
-                StatusText = "OK";
-                StatusNotifType = NotificationType.Success;
-                break;
-
-            case SparkFlow.Domain.Models.Pages.HealthStatus.Warning:
-                StatusText = "Warnings";
-                StatusNotifType = NotificationType.Warning;
-                break;
-
-            default:
-                StatusText = "Errors";
-                StatusNotifType = NotificationType.Error;
-                break;
-        }
-
-        foreach (var row in Rows)
-        {
-            var prefix = $"health.{row.Id}.";
-            var rowIssues = report.Issues
-                .Where(i => !string.IsNullOrWhiteSpace(i.Code) &&
-                            i.Code.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            if (rowIssues.Count == 0)
+            foreach (var issue in report.Issues
+                         .OrderByDescending(i => i.Severity)
+                         .ThenBy(i => i.Title, StringComparer.OrdinalIgnoreCase))
             {
-                row.State = HealthCheckItemState.Ok;
-                continue;
+                Issues.Add(new HealthIssueItemViewModel(issue));
             }
 
-            var worst = rowIssues.Max(i => i.Severity);
+            Blockers = report.Issues.Count(i => i.Severity == HealthIssueSeverity.Blocker);
+            Warnings = report.Issues.Count(i => i.Severity == HealthIssueSeverity.Warning);
+            Infos = report.Issues.Count(i => i.Severity == HealthIssueSeverity.Info);
 
-            row.State = worst switch
+            StatusText = report.Status switch
             {
-                HealthIssueSeverity.Blocker => HealthCheckItemState.Error,
-                HealthIssueSeverity.Warning => HealthCheckItemState.Warning,
-                _ => HealthCheckItemState.Warning
+                SparkFlow.Domain.Models.Pages.HealthStatus.Ok => "OK",
+                SparkFlow.Domain.Models.Pages.HealthStatus.Warning => "Warnings",
+                _ => "Errors"
             };
 
-            if (string.IsNullOrWhiteSpace(row.Message))
-                row.Message = rowIssues[0].Title ?? "";
+            StatusNotifType = report.Status switch
+            {
+                SparkFlow.Domain.Models.Pages.HealthStatus.Ok => NotificationType.Success,
+                SparkFlow.Domain.Models.Pages.HealthStatus.Warning => NotificationType.Warning,
+                _ => NotificationType.Error
+            };
+
+            foreach (var row in Rows)
+            {
+                var prefix = $"health.{row.Id}.";
+                var rowIssues = report.Issues
+                    .Where(i => !string.IsNullOrWhiteSpace(i.Code) &&
+                                i.Code.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (rowIssues.Count == 0)
+                {
+                    row.State = HealthCheckItemState.Ok;
+                    continue;
+                }
+
+                var worst = rowIssues.Max(i => i.Severity);
+
+                row.State = worst == HealthIssueSeverity.Blocker
+                    ? HealthCheckItemState.Error
+                    : HealthCheckItemState.Warning;
+
+                if (string.IsNullOrWhiteSpace(row.Message))
+                    row.Message = rowIssues[0].Title ?? "";
+            }
+
+            RebindCommandStates();
+        });
+    }
+
+    private async global::System.Threading.Tasks.Task SetBusyUiAsync(bool value)
+        => await Dispatcher.UIThread.InvokeAsync(() => IsBusy = value);
+
+    private async global::System.Threading.Tasks.Task SetStatusUiAsync(string text, NotificationType type)
+        => await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            StatusText = text;
+            StatusNotifType = type;
+        });
+
+    private void RebindCommandStatesSafe()
+    {
+        if (Dispatcher.UIThread.CheckAccess())
+        {
+            RebindCommandStates();
+            return;
         }
 
-        RebindCommandStates();
+        Dispatcher.UIThread.Post(RebindCommandStates);
     }
 
     private void RebindCommandStates()
