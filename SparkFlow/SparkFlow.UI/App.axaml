@@ -4,8 +4,8 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:health="clr-namespace:SparkFlow.UI.Converters.Health"
     xmlns:local="clr-namespace:SparkFlow.UI"
-    xmlns:notification="clr-namespace:SparkFlow.UI.Converters.Notification"
     xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:notification="clr-namespace:SparkFlow.UI.Converters.Notification"
     xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -25,9 +25,11 @@
     <!--  RESOURCES (ResourceDictionary / ControlTheme files)  -->
     <!--  =========================================================  -->
     <Application.Resources>
-        <!-- Make ResourceDictionary the single container for all resources.
-             Move converters and other resources inside this dictionary so every
-             item added to the IDictionary has either an x:Key or is a merged dictionary. -->
+        <!--
+            Make ResourceDictionary the single container for all resources.
+            Move converters and other resources inside this dictionary so every
+            item added to the IDictionary has either an x:Key or is a merged dictionary.
+        -->
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
 
@@ -59,11 +61,11 @@
         <!--  Base Avalonia theme  -->
         <FluentTheme />
 
-        <!-- REQUIRED FOR Material.Icons.Avalonia -->
+        <!--  REQUIRED FOR Material.Icons.Avalonia  -->
         <mi:MaterialIconStyles />
 
         <!--  Suki theme  -->
-        <sukiUi:SukiTheme Locale="en-US"  ThemeColor="Red" />
+        <sukiUi:SukiTheme Locale="en-US" ThemeColor="Green" />
 
         <!--  Your local styles  -->
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />

@@ -16,8 +16,6 @@
 public sealed class AdbDeviceListedItem : IHealthCheckItem
 {
     private readonly IAdbClient _adb;
-    private IHealthCheckItem _healthCheckItemImplementation;
-    private IHealthCheckItem _healthCheckItemImplementation1;
 
     public HealthCheckItemId Id => HealthCheckItemId.Adb_DeviceListed;
     public string Title => "Device Listed in adb devices";

@@ -1,12 +1,4 @@
-/* ============================================================================
- * SparkFlow File Header
- * File: SparkFlow.Core/Services/Runner/GlobalRunnerService.cs
- * Purpose: Core component: GlobalRunnerService.
- * Notes:
- *  - This file is part of the SparkFlow automation platform.
- *  - Comments are intentionally kept in English for consistency across the codebase.
- * ============================================================================ */
-
+using System.Diagnostics;
 using AdbLib.Abstractions;
 using SettingsStore.Interfaces;
 using SparkFlow.Abstractions.Abstractions;
@@ -17,28 +9,12 @@ using SparkFlow.Abstractions.Services.Emulator.Binding;
 using SparkFlow.Abstractions.Services.Emulator.Guards;
 using SparkFlow.Domain.Models;
 using SparkFlow.Domain.Models.Accounts;
+using SparkFlow.Domain.Models.Runner;
 using UtiliLib;
 using UtiliLib.Types;
 
 namespace SparkFlow.Engine.Runner;
 
-/// <summary>
-/// Global runner (ADB-first, emulator-agnostic):
-/// - Iterates over Enabled accounts (fixed deterministic order)
-/// - (Optional) starts emulator instance (if InstanceId is provided and emulator supports it)
-/// - Uses AccountProfile.adbSerial as the Source of Truth for device targeting (Owner ADB)
-/// - Waits for device ready via Owner ADB
-/// - Launches War and Order
-///
-/// IMPORTANT:
-/// - No list2 parsing.
-/// - No "adb connect" retries here.
-/// - If a profile has no adbSerial, it is skipped (safe + explicit).
-///
-/// UPDATED (Pause immediate during account):
-/// - PausePointAsync is called between steps + inside polling loops
-/// - DeviceReady wait supports PausePoint via AdbClient overload
-/// </summary>
 public sealed class GlobalRunnerService : IGlobalRunnerService
 {
     private readonly IAccountsSelector _accounts;
@@ -48,6 +24,10 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
     private readonly IProfilesAutoBinder _autoBinder;
     private readonly IRotationManager _rotation;
     private readonly ISettingsAccessor _settings;
+    private readonly IAccountScheduler _scheduler;
+    private readonly IAccountRuntimeStore _runtime;
+    private readonly IRunnerMetrics _metrics;
+    private readonly IExecutionPolicyEngine _policy;
     private readonly MLogger _log;
 
     private static int _sessionCounter;
@@ -58,22 +38,21 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
     private CancellationTokenSource? _cts;
     private Task? _runTask;
 
-    private GlobalRunnerState _state = GlobalRunnerState.Idle;
+    private volatile GlobalRunnerState _state = GlobalRunnerState.Idle;
     public GlobalRunnerState State => _state;
 
     public event Action<GlobalRunnerState>? StateChanged;
 
     // ================= GAME =================
-
     private const string WarAndOrderPackage = "com.camelgames.superking";
-
-    // Fallback activity (if resolve-activity fails)
-    // (Often differs between regions/versions; keep it empty and rely on resolve-activity + monkey)
-    private const string WarAndOrderDefaultActivity = "";
 
     private const int EmulatorStartTimeoutMs = 90_000;
     private const int DeviceReadyTimeoutMs = 60_000;
     private const int LaunchTimeoutMs = 30_000;
+
+    // Loop behavior
+    private const int IdleDelayMs = 1200;
+    private const int NoEligibleDelayMs = 900;
 
     public GlobalRunnerService(
         IAccountsSelector accounts,
@@ -83,6 +62,10 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
         IProfilesAutoBinder autoBinder,
         IRotationManager rotation,
         ISettingsAccessor settings,
+        IAccountScheduler scheduler,
+        IAccountRuntimeStore runtime,
+        IRunnerMetrics metrics,
+        IExecutionPolicyEngine policy,
         MLogger logger)
     {
         _accounts = accounts;
@@ -92,6 +75,10 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
         _autoBinder = autoBinder;
         _rotation = rotation;
         _settings = settings;
+        _scheduler = scheduler;
+        _runtime = runtime;
+        _metrics = metrics;
+        _policy = policy;
         _log = logger ?? MLogger.Instance;
     }
 
@@ -103,7 +90,7 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
     {
         lock (_gate)
         {
-            if (_runTask is not null && !_runTask.IsCompleted)
+            if (_runTask is { IsCompleted: false })
                 return _runTask;
 
             _cts?.Dispose();
@@ -113,9 +100,9 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
             _runId = Guid.NewGuid().ToString("N");
 
             _rotation.Resume();
-            SetState(GlobalRunnerState.Running);
+            ChangeState(GlobalRunnerState.Running);
 
-            _runTask = Task.Run(() => RunAsync(_cts.Token), _cts.Token);
+            _runTask = Task.Run(() => RunAsync(_cts.Token));
             return _runTask;
         }
     }
@@ -128,7 +115,7 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
                 return;
 
             _rotation.Pause();
-            SetState(GlobalRunnerState.Paused);
+            ChangeState(GlobalRunnerState.Paused);
         }
     }
 
@@ -140,7 +127,7 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
                 return;
 
             _rotation.Resume();
-            SetState(GlobalRunnerState.Running);
+            ChangeState(GlobalRunnerState.Running);
         }
     }
 
@@ -153,100 +140,165 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
             if (_state == GlobalRunnerState.Stopping)
                 return;
 
-            SetState(GlobalRunnerState.Stopping);
+            ChangeState(GlobalRunnerState.Stopping);
 
-            // Ensure we don't stay blocked on Pause gate during stop.
             _rotation.Resume();
-
             _cts?.Cancel();
             runTaskToAwait = _runTask;
         }
 
-        try
+        if (runTaskToAwait is not null)
+            await Task.WhenAny(runTaskToAwait, Task.Delay(10_000)).ConfigureAwait(false);
+
+        lock (_gate)
         {
-            if (runTaskToAwait is not null)
-                await Task.WhenAny(runTaskToAwait, Task.Delay(10_000)).ConfigureAwait(false);
-        }
-        catch
-        {
-            // ignore
-        }
-        finally
-        {
-            lock (_gate)
-            {
-                _cts?.Dispose();
-                _cts = null;
-                _runTask = null;
-                SetState(GlobalRunnerState.Idle);
-            }
+            _cts?.Dispose();
+            _cts = null;
+            _runTask = null;
+            ChangeState(GlobalRunnerState.Idle);
         }
     }
 
     // =========================================================
-    // Main loop
+    // Main loop (Scheduler-driven)
     // =========================================================
 
     private async Task RunAsync(CancellationToken ct)
     {
         try
         {
-            while (true)
+            while (!ct.IsCancellationRequested)
             {
-                // 0) Background environment preparation (single button UX)
-                await _autoStarter.EnsureAnyDeviceReadyAsync(ct).ConfigureAwait(false);
+                await _rotation.PausePointAsync(ct).ConfigureAwait(false);
+                ct.ThrowIfCancellationRequested();
 
-                // Once devices exist, auto-bind any unbound profiles (adbSerial == null)
+                var nowUtc = DateTimeOffset.UtcNow;
+
+                await _autoStarter.EnsureAnyDeviceReadyAsync(ct).ConfigureAwait(false);
                 await _autoBinder.AutoBindUnboundProfilesAsync(ct).ConfigureAwait(false);
 
                 var enabled = await _accounts.GetEnabledOrderedAsync(ct).ConfigureAwait(false);
                 if (enabled.Count == 0)
                 {
-                    LogRunnerInfo("[Runner] No enabled profiles. Stopping.", profileId: null);
-                    break;
+                    LogRunnerInfo("[Runner] No enabled profiles. Going idle.", null);
+                    await Task.Delay(IdleDelayMs, ct).ConfigureAwait(false);
+                    continue;
                 }
 
-                // Refresh emulator instances list once per cycle (optional).
-                try { await _emu.RefreshAsync(ct).ConfigureAwait(false); } catch { /* ignore */ }
+                try { await _emu.RefreshAsync(ct).ConfigureAwait(false); } catch { }
 
-                LogRunnerInfo($"[Runner] Cycle started. Profiles={enabled.Count} | AutoRestart={_settings.Current.AutoRestartEnabled}", profileId: null);
+                var maxBatch = 1; // sequential for now
+                var batch = _scheduler.SelectNextBatch(enabled, nowUtc, maxBatch);
 
-                foreach (var acc in enabled)
+                if (batch.Count == 0)
                 {
-                    // Global pause boundary (between accounts)
+                    _metrics.Inc("runner.no_eligible");
+                    await Task.Delay(NoEligibleDelayMs, ct).ConfigureAwait(false);
+                    continue;
+                }
+
+                foreach (var acc in batch)
+                {
                     await _rotation.PausePointAsync(ct).ConfigureAwait(false);
                     ct.ThrowIfCancellationRequested();
 
-                    await RunOneAccountAsync(acc, ct).ConfigureAwait(false);
+                    await ExecuteAccountEnterpriseAsync(acc, ct).ConfigureAwait(false);
                 }
 
-                var autoRestart = _settings.Current.AutoRestartEnabled;
-                if (!autoRestart)
+                if (!_settings.Current.AutoRestartEnabled)
                 {
-                    LogRunnerInfo("[Runner] Cycle finished. Auto-Restart is disabled.", profileId: null);
+                    LogRunnerInfo("[Runner] Auto-Restart disabled. Stopping.", null);
                     break;
                 }
-
-                // Start the next cycle with a fresh RunId for clearer logs.
-                _runId = Guid.NewGuid().ToString("N");
-                LogRunnerInfo($"[Runner] Auto-Restart: starting a new cycle. RunId={_runId}", profileId: null);
             }
 
-            SetState(GlobalRunnerState.Idle);
+            ChangeState(GlobalRunnerState.Idle);
         }
         catch (OperationCanceledException)
         {
-            SetState(GlobalRunnerState.Idle);
+            ChangeState(GlobalRunnerState.Idle);
         }
         catch (Exception ex)
         {
-            LogRunnerException(ex, "[Runner] Faulted", profileId: null);
-            SetState(GlobalRunnerState.Faulted);
+            LogRunnerException(ex, "[Runner] Faulted", null);
+            ChangeState(GlobalRunnerState.Faulted);
         }
     }
 
     // =========================================================
-    // Account execution (UPDATED: Pause is immediate during account)
+    // Enterprise account execution wrapper (Stage-2: policy-driven)
+    // =========================================================
+
+    private async Task ExecuteAccountEnterpriseAsync(AccountProfile acc, CancellationToken ct)
+    {
+        var profileId = acc.Id?.ToString() ?? "";
+        var now = DateTimeOffset.UtcNow;
+
+        // 1) Mark start atomically
+        _runtime.Upsert(profileId, st =>
+        {
+            st.LastStartedUtc = now;
+            st.UpdatedAtUtc = now;
+            return st;
+        });
+
+        var sw = Stopwatch.StartNew();
+
+        // Important: Policy must decide next-run/disable/circuit decisions.
+        var context = new PolicyContext(
+            Profile: acc,
+            Runtime: _runtime.GetOrCreate(profileId),
+            NowUtc: now);
+
+        var outcome = await _policy.ExecuteAsync(
+            context,
+            runOnceAsync: innerCt => RunOneAccountAsync(acc, innerCt),
+            ct).ConfigureAwait(false);
+
+        sw.Stop();
+
+        // 2) Apply policy decision atomically
+        _runtime.Upsert(profileId, st =>
+        {
+            var finishedAt = DateTimeOffset.UtcNow;
+
+            st.LastFinishedUtc = finishedAt;
+            st.UpdatedAtUtc = finishedAt;
+
+            if (outcome.Success)
+            {
+                // Domain method: resets failures + clears last failure fields
+                st.MarkSuccess(finishedAt);
+            }
+            else
+            {
+                var failure = outcome.Failure!;
+
+                // Domain method: increments failures + sets last failure fields (enum-safe)
+                st.MarkFailure(finishedAt, failure);
+
+                // Optional disable window (enterprise safety)
+                if (outcome.Decision.DisableFor.HasValue)
+                    st.DisableFor(outcome.Decision.DisableFor.Value, finishedAt, failure);
+            }
+
+            // Policy is the source of truth for scheduling
+            st.NextRunAtUtc = outcome.Decision.NextRunAtUtc;
+
+            return st;
+        });
+
+        // 3) Metrics
+        if (outcome.Success)
+            _metrics.Inc("account.success");
+        else
+            _metrics.Inc($"account.failure.{outcome.Failure!.Type}");
+
+        _metrics.ObserveMs("account.duration_ms", sw.ElapsedMilliseconds);
+    }
+
+    // =========================================================
+    // Account execution (ADB-first, pause-responsiveness)
     // =========================================================
 
     private Task PausePointAsync(CancellationToken ct) => _rotation.PausePointAsync(ct);
@@ -259,23 +311,16 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
             $"[Runner] Account: {acc.Name} | InstanceId={acc.InstanceId} | AdbSerial={acc.AdbSerial}",
             profileId);
 
-        // ✅ Immediate pause/stop boundary (start of account)
         await PausePointAsync(ct).ConfigureAwait(false);
         ct.ThrowIfCancellationRequested();
 
-        // 0) Validate ADB serial binding
         if (string.IsNullOrWhiteSpace(acc.AdbSerial))
-        {
-            LogRunnerWarn("[Runner] Skipped: adbSerial is missing for this profile.", profileId);
-            return;
-        }
+            throw new RunnerClassifiedException(new RunnerFailure(RunnerFailureType.Skipped_NoSerial, "adbSerial missing"));
 
-        var serial = acc.AdbSerial!.Trim();
+        var serial = acc.AdbSerial.Trim();
 
-        // ✅ Pause boundary before emulator step
         await PausePointAsync(ct).ConfigureAwait(false);
 
-        // 1) (Optional) Start emulator instance (InstanceId is treated as string)
         var instanceId = GetInstanceIdString(acc);
         if (IsInstanceIdEnabled(instanceId))
         {
@@ -286,28 +331,22 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
             }
             catch (Exception ex)
             {
-                LogRunnerWarn($"[Runner] Emulator start failed: {ex.Message}", profileId);
-                // Continue: user may have started emulator manually.
+                throw new RunnerClassifiedException(new RunnerFailure(RunnerFailureType.EmulatorStartFailed, ex.Message));
             }
         }
 
-        // ✅ Pause boundary after emulator step
         await PausePointAsync(ct).ConfigureAwait(false);
 
-        // 2) Wait for device ready (UPDATED: supports PausePoint inside polling)
         var ready = await WaitForDeviceReadyAsync(serial, profileId, ct).ConfigureAwait(false);
         if (!ready)
-            return;
+            throw new RunnerClassifiedException(new RunnerFailure(RunnerFailureType.DeviceReadyTimeout, "device not ready in time"));
 
-        // ✅ Pause boundary after ready
         await PausePointAsync(ct).ConfigureAwait(false);
 
-        // 3) Launch the game (UPDATED: PausePoint inside verification polling)
         var launched = await LaunchWarAndOrderAsync(serial, profileId, ct).ConfigureAwait(false);
         if (!launched)
-            return;
+            throw new RunnerClassifiedException(new RunnerFailure(RunnerFailureType.GameLaunchFailed, "launch verification failed"));
 
-        // ✅ Pause boundary after launch
         await PausePointAsync(ct).ConfigureAwait(false);
 
         LogRunnerInfo("[Runner] Device + Game are running ✅", profileId);
@@ -322,7 +361,6 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             cts.CancelAfter(DeviceReadyTimeoutMs);
 
-            // ✅ NEW overload: pause is respected during device polling
             await _adb.WaitForDeviceReadyAsync(serial, PausePointAsync, cts.Token).ConfigureAwait(false);
 
             LogAdbInfo("[ADB] Device ready ✅", profileId);
@@ -331,7 +369,6 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
         catch (OperationCanceledException)
         {
             if (ct.IsCancellationRequested) throw;
-
             LogAdbWarn("[ADB] Device did not become ready in time.", profileId);
             return false;
         }
@@ -346,10 +383,8 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
     {
         LogGameInfo("[Game] Launching War and Order...", profileId);
 
-        // ✅ Pause boundary before shell/package check
         await PausePointAsync(ct).ConfigureAwait(false);
 
-        // 1) Ensure package exists
         var packages = await SafeShellAsync(serial, $"pm list packages {WarAndOrderPackage}", 12_000, profileId, ct)
             .ConfigureAwait(false);
 
@@ -357,13 +392,11 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
             !packages.Contains(WarAndOrderPackage, StringComparison.OrdinalIgnoreCase))
         {
             LogGameWarn("[Game] Package not installed on this device.", profileId);
-            return false;
+            throw new RunnerClassifiedException(new RunnerFailure(RunnerFailureType.GameNotInstalled, "package missing"));
         }
 
-        // ✅ Pause boundary before monkey
         await PausePointAsync(ct).ConfigureAwait(false);
 
-        // 2) Try monkey first
         try
         {
             await _adb.StartPackageMonkeyAsync(serial, WarAndOrderPackage, timeoutMs: LaunchTimeoutMs, ct: ct)
@@ -374,10 +407,8 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
             LogGameWarn($"[Game] monkey failed: {ex.Message}", profileId);
         }
 
-        // ✅ Pause boundary after monkey
         await PausePointAsync(ct).ConfigureAwait(false);
 
-        // 3) If not running, resolve main activity and StartActivity
         if (!await _adb.IsPackageRunningAsync(serial, WarAndOrderPackage, timeoutMs: 8_000, ct: ct).ConfigureAwait(false))
         {
             await PausePointAsync(ct).ConfigureAwait(false);
@@ -387,23 +418,22 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
 
             var component = ExtractActivityComponent(resolved);
 
-            if (string.IsNullOrWhiteSpace(component))
-                component = WarAndOrderDefaultActivity;
-
-            await PausePointAsync(ct).ConfigureAwait(false);
-
-            try
+            if (!string.IsNullOrWhiteSpace(component))
             {
-                await _adb.StartActivityAsync(serial, component, timeoutMs: LaunchTimeoutMs, ct: ct)
-                    .ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                LogGameWarn($"[Game] StartActivity failed: {ex.Message}", profileId);
+                await PausePointAsync(ct).ConfigureAwait(false);
+
+                try
+                {
+                    await _adb.StartActivityAsync(serial, component, timeoutMs: LaunchTimeoutMs, ct: ct)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    LogGameWarn($"[Game] StartActivity failed: {ex.Message}", profileId);
+                }
             }
         }
 
-        // 4) Verify running (poll a bit) - UPDATED: pause respected inside loop
         var ok = await WaitUntilAsync(
             predicate: () =>
             {
@@ -417,7 +447,7 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
         if (!ok)
         {
             var top = string.Empty;
-            try { top = await _adb.GetTopActivityAsync(serial, timeoutMs: 12_000, ct: ct).ConfigureAwait(false); } catch { /* ignore */ }
+            try { top = await _adb.GetTopActivityAsync(serial, timeoutMs: 12_000, ct: ct).ConfigureAwait(false); } catch { }
 
             LogGameWarn($"[Game] Launch verification failed. TopActivity: {TrimForLog(top)}", profileId);
             return false;
@@ -431,9 +461,7 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
     {
         try
         {
-            // ✅ Pause boundary before each shell call (fast responsiveness)
             await PausePointAsync(ct).ConfigureAwait(false);
-
             return await _adb.ShellAsync(serial, cmd, timeoutMs, ct).ConfigureAwait(false) ?? string.Empty;
         }
         catch (Exception ex)
@@ -448,16 +476,18 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
         if (string.IsNullOrWhiteSpace(resolveOutput))
             return string.Empty;
 
-        var lines = resolveOutput
-            .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => x.Trim())
-            .Where(x => x.Contains('/') && !x.StartsWith("name=", StringComparison.OrdinalIgnoreCase))
-            .ToList();
+        foreach (var raw in resolveOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var line = raw.Trim();
+            if (line.StartsWith("name=", StringComparison.OrdinalIgnoreCase)) continue;
+            if (!line.Contains('/')) continue;
+            if (line.Count(c => c == '/') == 1)
+                return line;
+        }
 
-        return lines.Count > 0 ? lines[0] : string.Empty;
+        return string.Empty;
     }
 
-    // UPDATED: pausePointAsync inside polling loop
     private static async Task<bool> WaitUntilAsync(
         Func<Task<bool>> predicate,
         Func<CancellationToken, Task> pausePointAsync,
@@ -488,18 +518,6 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
         return s.Length <= 350 ? s : s.Substring(0, 350) + "...";
     }
 
-    private void SetState(GlobalRunnerState state)
-    {
-        _state = state;
-        StateChanged?.Invoke(state);
-
-        LogRunnerInfo($"[Runner] State -> {state}", profileId: null);
-    }
-
-    // =========================================================
-    // InstanceId handling (NO assumptions about int/string)
-    // =========================================================
-
     private static string GetInstanceIdString(AccountProfile acc)
         => acc.InstanceId?.ToString()?.Trim() ?? string.Empty;
 
@@ -508,7 +526,6 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
         if (string.IsNullOrWhiteSpace(instanceId))
             return false;
 
-        // treat "-1" / "none" / "null" as disabled safely
         if (string.Equals(instanceId, "-1", StringComparison.OrdinalIgnoreCase)) return false;
         if (string.Equals(instanceId, "none", StringComparison.OrdinalIgnoreCase)) return false;
         if (string.Equals(instanceId, "null", StringComparison.OrdinalIgnoreCase)) return false;
@@ -516,9 +533,14 @@ public sealed class GlobalRunnerService : IGlobalRunnerService
         return true;
     }
 
-    // =========================================================
-    // Logging helpers (compatible with your MLogger)
-    // =========================================================
+    private void ChangeState(GlobalRunnerState state)
+    {
+        _state = state;
+        var handler = StateChanged;
+        handler?.Invoke(state);
+
+        LogRunnerInfo($"[Runner] State -> {state}", null);
+    }
 
     private void LogRunnerInfo(string msg, string? profileId)
         => _log.Log(LogComponent.Runner, LogChannel.SYSTEM, LogLevel.INFO, msg, _sessionId, _runId, profileId);

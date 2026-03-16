@@ -141,7 +141,10 @@ public sealed class AppShutdownService : IAppShutdownService
             if (File.Exists(assetsAdb))
                 return assetsAdb;
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
 
         return null;
     }

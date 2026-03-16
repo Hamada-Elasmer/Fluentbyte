@@ -96,6 +96,7 @@
 ./.git/objects/0a/13c9cc0e5d7b8f0e1065d14f867e7512f6c79e
 ./.git/objects/0a/6f6d00652f19b8a0e0eac7bda79f105c54c470
 ./.git/objects/0a/a9758aaeb77ca9f060da76213a357bdd21a67f
+./.git/objects/0a/ac78572d1293bbf5dd51c201a216977ad8a99b
 ./.git/objects/0a/c3819d92ec9fc6db9b4fc0f1c3429ae26fb7bc
 ./.git/objects/0a/d42a1b4fc51b22de79a78def0a106c4387d465
 ./.git/objects/0a/e8024fc6679d0880520bf586f232d99919ed44
@@ -183,6 +184,7 @@
 ./.git/objects/1a/bc0d91b999700b6b410423e21fff2d363945a1
 ./.git/objects/1a/d69395d457b96a6452c12a30101185013befae
 ./.git/objects/1b
+./.git/objects/1b/5af81cb171c542102262d43942b29b2fc8de7a
 ./.git/objects/1b/e33056d2e2ba83ab77f5a6cd18309990e563bf
 ./.git/objects/1b/f6db25c2eff986cebd91039d874a8e7ee6277d
 ./.git/objects/1c
@@ -200,8 +202,10 @@
 ./.git/objects/1d/a794e8324e6e3fa8e41342ea035e5cfbe9b9c6
 ./.git/objects/1d/f9da18861aa2cedbc6fcfbb2a3e8f6a90b4b41
 ./.git/objects/1e
+./.git/objects/1e/863606f92b41120c69e3b9d52539bb5319dd77
 ./.git/objects/1e/b66e6fd11b352ca05085ae1a701a432b668c77
 ./.git/objects/1e/cb1863c0b83ea476e283829a5409c456fafe4e
+./.git/objects/1e/cb81d72db5f3ca22f7155afff7f8418caa097c
 ./.git/objects/1e/cbc1743f56f6c0458924bcfbe93aca27fd8e4f
 ./.git/objects/1e/cf907d3638da7db8ec01fffcd2ea35a47aa7ac
 ./.git/objects/1e/d79af3df05fe00e7ce54cd1f859524f03dce57
@@ -215,6 +219,7 @@
 ./.git/objects/20
 ./.git/objects/20/070b0eddefdb3919137cfbf3356e390658113f
 ./.git/objects/20/45a40fb10f4bfb5169f61859d37b7b6a4178a3
+./.git/objects/20/d7485f4a0c1f75e2708033195720b188cfb871
 ./.git/objects/21
 ./.git/objects/21/0546e57de6d3abfd83fdfe20c2a3ece96745c7
 ./.git/objects/21/12ac9fa61c4ae5bcc038d502afcddfea5610b4
@@ -302,6 +307,7 @@
 ./.git/objects/32/82ed3ef5b604701a0a929c99d5945a80e96586
 ./.git/objects/32/a3bca31965224c916db7a6dc91e8055b5270a9
 ./.git/objects/32/a980982146e177e6f7b1adfdb0912815318ff2
+./.git/objects/32/b32655d5963317d32b762b0ddb102a6ac78f7e
 ./.git/objects/32/f5afd22c9c4941bb4000f6455bcda0b011afb4
 ./.git/objects/33
 ./.git/objects/33/055062dbfb7e3e992262489d12a9d06b45aa72
@@ -319,6 +325,7 @@
 ./.git/objects/36
 ./.git/objects/36/42f5fceebba8d1cf08ea4fcebceaa27cb61fcd
 ./.git/objects/36/4789efa14186aedf26947d34b87e44b2b8a82b
+./.git/objects/36/5d18c1eaea2c6227436fc2efc1cb1410ead8fb
 ./.git/objects/37
 ./.git/objects/37/1f86b30fa66029dccb189dfa9c79a3a5ebbc87
 ./.git/objects/37/7d1b30ec275365e129919841e83f609bda1c06
@@ -328,6 +335,7 @@
 ./.git/objects/38/8ed91a1afba9104da417156cfd8e6f8a34dd2b
 ./.git/objects/39
 ./.git/objects/39/8301809d67e2f29194b7c7999d5369a3c9c91f
+./.git/objects/39/a0f10d257efa7923553a28d0c4515ad8524367
 ./.git/objects/39/d29a4c9331b8d3a8684d2126d7521ea311a4bb
 ./.git/objects/3a
 ./.git/objects/3a/43c6bb756efc05c31381a0f22b8c269d9318da
@@ -437,6 +445,7 @@
 ./.git/objects/4a/addc607d23f88e938d78eb8c37d72f026a57a4
 ./.git/objects/4b
 ./.git/objects/4b/10779fa8a8482909b9080953ffcfe6ba9664d1
+./.git/objects/4b/6eb9961230496dbb42d1a1614ee850e4b7be65
 ./.git/objects/4b/74af61f29749643eb06c474207a809199153c7
 ./.git/objects/4b/e15e65b678c9ce29f350ffc53f70e012878b7b
 ./.git/objects/4b/f2005ad12133f91fe6f45ee6cc2f5d454ba069
@@ -457,6 +466,7 @@
 ./.git/objects/4e/07e94799962b34c6c3820b2f259ff526b18413
 ./.git/objects/4e/1f1fbd58e29476a99c7a15c45b4be3a2fc3102
 ./.git/objects/4e/3f8f7bf17214d8bb72d76cdd3bdf82fe8eff97
+./.git/objects/4e/5bbbd5f278c98d8ead81e47f12d808f2a6d233
 ./.git/objects/4e/ad3bb2c7f60045764001bde15e42a0d5b1fdb8
 ./.git/objects/4e/e5168f5cad90a0791e7d18a862a1e83e6fdff2
 ./.git/objects/4e/fd236db76c0c6f22f31e130dc92cb754729b3c
@@ -520,6 +530,7 @@
 ./.git/objects/5b
 ./.git/objects/5b/16ecb1e1780fb6428e477b063b2833fb19a398
 ./.git/objects/5b/37c009405257d0668832f5cb326bddcde83a7e
+./.git/objects/5b/83cc344ba7b5999f6f08cdfb7892592eb6d30b
 ./.git/objects/5b/9273cd505aeee207e136d2308316a7337807f5
 ./.git/objects/5b/a27dc7428d40ca1a5509b391ba485bcb95aae1
 ./.git/objects/5c
@@ -626,6 +637,7 @@
 ./.git/objects/6e/14f4bbb53eef1f862d1beb2fe72f5dd1df3ad0
 ./.git/objects/6e/614d69c17e75129a2c4160bfca273f9c75d971
 ./.git/objects/6e/cfcc08d5f5f053bfa566887c943afa537eff3a
+./.git/objects/6e/e991a04f1bacb5dc564679074ee9b5929e39c8
 ./.git/objects/6e/eb6027df401959b614e0e1b8e965045d38eb76
 ./.git/objects/6f
 ./.git/objects/6f/13e36dd7e74b11739132e95702d50d4c592b71
@@ -671,6 +683,7 @@
 ./.git/objects/75/9e8b1c683cacafc6c3bb3a6a00e7e739589068
 ./.git/objects/75/e0264a4ba237f3fd87e7e64536f29207a6c5eb
 ./.git/objects/76
+./.git/objects/76/0265966766744b9af24b32ad223a929cd5b55f
 ./.git/objects/76/054479331cc8e99577b5a46574e54e167f3c36
 ./.git/objects/76/4724a061ecb4ad422da13b1367333b02b096a0
 ./.git/objects/76/bbbbaba5a52e32771f42de441e4619b26b257e
@@ -699,6 +712,7 @@
 ./.git/objects/7a/dc76c5bbfd649625ca5626baa12bd4823c4c6d
 ./.git/objects/7a/f52f53d86e2c59b5aa375926ba0d4ab337997e
 ./.git/objects/7b
+./.git/objects/7b/3203f7e85b3c08e47952608ba91088879f5051
 ./.git/objects/7b/48c69301c4068a3ec3d45983f71f95d94fa6b8
 ./.git/objects/7b/65c7904c8e5a490eae338c6bc251ff0cb84a95
 ./.git/objects/7b/8e5e5922289d3799aa4cdfe5cc36adab47afa7
@@ -739,6 +753,7 @@
 ./.git/objects/82
 ./.git/objects/82/3cdb3a42e81abb27121fe1cdad7f37d53966c1
 ./.git/objects/82/3f36a24fbdfd5162c5e76d7e6ded0d3f38fc44
+./.git/objects/82/6ad193653c04c300586401ba647f3f171b5976
 ./.git/objects/83
 ./.git/objects/83/696edc3e3293368e3b67319079a2ac6bc1b0f0
 ./.git/objects/83/704faee770f85d89d8c2bda9a32633d054dcbd
@@ -749,6 +764,7 @@
 ./.git/objects/85
 ./.git/objects/85/14abcf498d1bb74c2ca6a4e13b65c481f86f77
 ./.git/objects/85/3eba8ffeb0f01ba03f467cbd98d8ecccd4c01b
+./.git/objects/85/95133ffb399750752e05b973a6e34e1b88f06a
 ./.git/objects/85/b290cde2b98974d2e713412e4fbf655d694175
 ./.git/objects/85/cea927cb9dda346e1140240cd26294da3782f2
 ./.git/objects/86
@@ -922,6 +938,7 @@
 ./.git/objects/a8/4d29594db5953d1df41ab1af5d55eab131db73
 ./.git/objects/a8/a060036cb1204c4a8a61b52c43fcf12476f7f9
 ./.git/objects/a8/d231f0e35a4438492646015e903bf1efb1d967
+./.git/objects/a8/dc41f8fb2278fae53be323f02593437c4d2ff5
 ./.git/objects/a8/e3bd75c3af6910abeb154a5f78bd70c2c58751
 ./.git/objects/a9
 ./.git/objects/a9/0acb4d87a4b4e686344de164101ed958f87ba2
@@ -1005,6 +1022,7 @@
 ./.git/objects/b7/a68ae69db1f585189ec94c84ddbbc613071d45
 ./.git/objects/b7/d5c1fda61d750c40ffc2fadb4cc0d7861ff750
 ./.git/objects/b7/dc0c99fe951bbcdbc7d0049011d01267a7e06d
+./.git/objects/b7/ec9e38642014865c59610d2893bf5282c66eb7
 ./.git/objects/b7/ee0ad3c7d715de7df6421af887c31059799f49
 ./.git/objects/b8
 ./.git/objects/b8/373c88c80b04ac3a7642478f2c437d0ad8a527
@@ -1105,6 +1123,7 @@
 ./.git/objects/c9/225750c3ff167e8808ca9bbb944e600480d156
 ./.git/objects/c9/245c49c43de5d996c58b2c989a3445d1e74842
 ./.git/objects/c9/369ab3d312717c9f1d950ba180bc63fce9e617
+./.git/objects/c9/7ef8c98618ee39979cc86b1df2dbcf57ef1abc
 ./.git/objects/c9/9272ba8cd1d637e1a6621e8692a940b492e8cc
 ./.git/objects/c9/9a39518b9bc0e1e628bf02efb0e8497243e94e
 ./.git/objects/c9/9c168d56707bb5fa107c9b5f508ffa63ff8f5b
@@ -1154,6 +1173,7 @@
 ./.git/objects/d0
 ./.git/objects/d0/87fba5c728498a6cb8acbc814c69d9e0455818
 ./.git/objects/d1
+./.git/objects/d1/08777abeed78b5798f9a6acb1dc47e5fa85abf
 ./.git/objects/d1/2bcbc76ed30239132cc61c564f61f652e0ad1c
 ./.git/objects/d1/a24211796d4ba0be102409d9c12bc286cd711b
 ./.git/objects/d1/e2deb5a0fd3e05759ab19edc29f01e407e72a5
@@ -1202,6 +1222,7 @@
 ./.git/objects/d7
 ./.git/objects/d7/53d087f5c3ea55a7a96ac0e7f7c10c0a4f39e5
 ./.git/objects/d8
+./.git/objects/d8/bff66ec87636171cbd839a60af98dddd3b34c2
 ./.git/objects/d8/e2a6d8797e61403c8b6dc783b4ef14aba99006
 ./.git/objects/d9
 ./.git/objects/d9/08259a63d5d74ecb15668dc4664e9c1303e6ec
@@ -1272,6 +1293,7 @@
 ./.git/objects/e6
 ./.git/objects/e6/9de29bb2d1d6434b8b29ae775ad8c2e48c5391
 ./.git/objects/e7
+./.git/objects/e7/1f1ce64ca6cb5d47d534812e73d1eca7debe30
 ./.git/objects/e7/2a1d0e00b0b64155f60b55cb11a3f642d00f79
 ./.git/objects/e7/5a90e27119cf6e76ac3ad10405fd6e19917867
 ./.git/objects/e7/78a6a85e7ce2a4008b32261a168b3b9071652a
@@ -1304,6 +1326,7 @@
 ./.git/objects/eb/79a1c5592546fee2c2cf5f9ca42c5e03a67c4c
 ./.git/objects/ec
 ./.git/objects/ec/4041bb325f06a5272cc3df6438f4217681b5e4
+./.git/objects/ec/966f657c16a9249300a2dde901f4fa9107d9d0
 ./.git/objects/ec/b6dc3617e7233f7d6719fe3c85b63f60397af2
 ./.git/objects/ec/b928fa80735cdd2f1a1a63eb3adb495924e6aa
 ./.git/objects/ec/ff67c0f29196d166597cdc9502507961de3e67
@@ -1648,9 +1671,15 @@
 ./SparkFlow/SparkFlow.Abstractions/Engine
 ./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces
 ./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IAccountRunner.cs
+./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IAccountRuntimeStore.cs
+./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IAccountScheduler.cs
+./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/ICircuitBreakerStore.cs
+./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IExecutionPolicyEngine.cs
+./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IFailureClassifier.cs
 ./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IInstanceSwitcher.cs
 ./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IResourceCheckScheduler.cs
 ./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IRotationManager.cs
+./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IRunnerMetrics.cs
 ./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IStateTracker.cs
 ./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/ITaskExecutor.cs
 ./SparkFlow/SparkFlow.Abstractions/Engine/Interfaces/IWaitLogic.cs
@@ -1723,6 +1752,9 @@
 ./SparkFlow/SparkFlow.Domain/Models/Pages/PageModel.cs
 ./SparkFlow/SparkFlow.Domain/Models/Pages/PagesEnum.cs
 ./SparkFlow/SparkFlow.Domain/Models/ResourceModel.cs
+./SparkFlow/SparkFlow.Domain/Models/Runner
+./SparkFlow/SparkFlow.Domain/Models/Runner/AccountRuntimeState.cs
+./SparkFlow/SparkFlow.Domain/Models/Runner/RunnerFailure.cs
 ./SparkFlow/SparkFlow.Domain/SparkFlow.Domain.csproj
 ./SparkFlow/SparkFlow.Domain/State
 ./SparkFlow/SparkFlow.Domain/State/AccountState.cs
@@ -1735,15 +1767,25 @@
 ./SparkFlow/SparkFlow.Engine/Engine/MultiAccount/InstanceSwitcher.cs
 ./SparkFlow/SparkFlow.Engine/Engine/MultiAccount/RotationManager.cs
 ./SparkFlow/SparkFlow.Engine/Engine/Scheduler
+./SparkFlow/SparkFlow.Engine/Engine/Scheduler/InMemoryAccountRuntimeStore.cs
+./SparkFlow/SparkFlow.Engine/Engine/Scheduler/NextRunScheduler.cs
 ./SparkFlow/SparkFlow.Engine/Engine/Scheduler/ResourceCheckScheduler.cs
 ./SparkFlow/SparkFlow.Engine/Engine/Scheduler/WaitLogic.cs
 ./SparkFlow/SparkFlow.Engine/Runner
 ./SparkFlow/SparkFlow.Engine/Runner/AppShutdownService.cs
 ./SparkFlow/SparkFlow.Engine/Runner/AsyncManualResetEvent.cs
+./SparkFlow/SparkFlow.Engine/Runner/AutoDisablePolicy.cs
+./SparkFlow/SparkFlow.Engine/Runner/DefaultFailureClassifier.cs
+./SparkFlow/SparkFlow.Engine/Runner/ExecutionPolicyEngine.cs
 ./SparkFlow/SparkFlow.Engine/Runner/GlobalRunnerService.cs
+./SparkFlow/SparkFlow.Engine/Runner/InMemoryCircuitBreakerStore.cs
+./SparkFlow/SparkFlow.Engine/Runner/InMemoryRunnerMetrics.cs
+./SparkFlow/SparkFlow.Engine/Runner/NextRunPolicy.cs
 ./SparkFlow/SparkFlow.Engine/Runner/NullGlobalRunnerService.cs
 ./SparkFlow/SparkFlow.Engine/Runner/ProfileValidationWorker.cs
 ./SparkFlow/SparkFlow.Engine/Runner/RunContext.cs
+./SparkFlow/SparkFlow.Engine/Runner/RunnerClassifiedException.cs
+./SparkFlow/SparkFlow.Engine/Runner/RunnerLog.cs
 ./SparkFlow/SparkFlow.Engine/Services
 ./SparkFlow/SparkFlow.Engine/Services/ProfileValidationService.cs
 ./SparkFlow/SparkFlow.Engine/SparkFlow.Engine.csproj

@@ -52,6 +52,7 @@ using UtiliLib;
 using UtiliLib.Abstractions;
 using UtiliLib.Net;
 using UtiliLib.Options;
+
 namespace SparkFlow.Bootstrap.Bootstrap;
 
 public static class CoreModule
@@ -240,7 +241,6 @@ public static class CoreModule
         // =========================================================
         services.AddSingleton<LocalMonitoringHost>();
 
-
         // =========================================================
         // ENGINE
         // =========================================================
@@ -251,15 +251,24 @@ public static class CoreModule
         services.AddSingleton<IInstanceSwitcher, InstanceSwitcher>();
 
         // =========================================================
+        // ENTERPRISE STAGE-1 (Scheduler + RuntimeStore + Metrics)
+        // =========================================================
+        services.AddSingleton<IAccountRuntimeStore, InMemoryAccountRuntimeStore>();
+        services.AddSingleton<IAccountScheduler, NextRunScheduler>();
+        services.AddSingleton<IRunnerMetrics, InMemoryRunnerMetrics>();
+
+        // =========================================================
+        // ENTERPRISE STAGE-2 (Policy + CircuitBreaker + FailureClassifier)
+        // =========================================================
+        services.AddSingleton<IFailureClassifier, DefaultFailureClassifier>();
+        services.AddSingleton<ICircuitBreakerStore, InMemoryCircuitBreakerStore>();
+        services.AddSingleton<IExecutionPolicyEngine, ExecutionPolicyEngine>();
+
+        // =========================================================
         // GLOBAL RUNNER
         // =========================================================
         services.AddSingleton<IGlobalRunnerService, GlobalRunnerService>();
-        // Low-level library registrations
-        services.AddDeviceBindingLib();
 
-        // Core services (single source of truth)
-        services.AddSingleton<ProfileDeviceBinder>();
-        services.AddSingleton<ProfileDeviceResolver>();
         return services;
     }
 }

@@ -13,8 +13,5 @@
         <ProjectReference Include="..\..\Libraries\SettingsStore\SettingsStore.csproj" />
         <ProjectReference Include="..\SparkFlow.Domain\SparkFlow.Domain.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    </ItemGroup>
 
 </Project>
